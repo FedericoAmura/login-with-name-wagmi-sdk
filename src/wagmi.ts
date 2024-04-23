@@ -1,0 +1,51 @@
+import { http, createConfig } from "wagmi";
+import { sepolia } from "wagmi/chains";
+
+import { ENS } from "../lib/nameResolvers/ENS";
+// import { LitId } from "../lib/nameResolvers/LitId";
+import { loginWithName } from "../lib/loginWithName";
+import { showLoading } from "./loading";
+
+const nameResolver = new ENS({ chain: sepolia });
+// const nameResolver = new LitId({ litNetwork: "cayenne" });
+
+export const config = createConfig({
+  chains: [sepolia],
+  connectors: [
+    loginWithName({
+      options: {
+        jsonRpcUrl: "https://eth.llamarpc.com",
+        debug: true,
+        chain: sepolia,
+        wcConfig: {
+          projectId: import.meta.env.VITE_WC_PROJECT_ID,
+          metadata: {
+            name: "Login with Name",
+            description: "Log in with a domain name",
+            url: "localhost:5173", // origin must match your domain & subdomain
+            icons: ['https://avatars.githubusercontent.com/u/37784886']
+          },
+        },
+        reloadOnDisconnect: false,
+        toggleLoading: showLoading,
+        nameResolver,
+        getDomainName: async () => {
+          let domainName;
+          do {
+            domainName = prompt("Enter your domain name");
+          } while (!domainName);
+          return domainName;
+        }
+      },
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+  },
+});
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof config
+  }
+}
