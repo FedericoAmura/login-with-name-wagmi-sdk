@@ -1,13 +1,14 @@
 import { http, createConfig } from "wagmi";
 import { sepolia } from "wagmi/chains";
 
-import { ENS } from "../lib/nameResolvers/ENS";
-// import { LitId } from "../lib/nameResolvers/LitId";
+import { LitIdENS } from "../lib/nameResolvers/LitIdENS";
 import { loginWithName } from "../lib/loginWithName";
 import { showLoading } from "./loading";
 
-const nameResolver = new ENS({ chain: sepolia });
-// const nameResolver = new LitId({ litNetwork: "cayenne" });
+const nameResolver = new LitIdENS({
+  litNetwork: "cayenne",
+  chain: sepolia,
+});
 
 export const config = createConfig({
   chains: [sepolia],
