@@ -10,10 +10,16 @@ const loginWithNameStepDescriptions: Record<LoginWithNameSteps, string> = {
   [LoginWithNameSteps.GET_DOMAIN_NAME]: "Getting Domain Name...",
   [LoginWithNameSteps.RESOLVE_DOMAIN_NAME]: "Resolving Domain Name...",
   [LoginWithNameSteps.RESOLVE_AUTHENTICATOR]: "Resolving Authenticator info...",
-  [LoginWithNameSteps.TRIGGER_AUTHENTICATION]: "Please authenticate...",
+  [LoginWithNameSteps.TRIGGER_AUTHENTICATION]: "Please authenticate in your wallet and connect back",
 };
 
 export function showLoading(loginWithNameStep?: LoginWithNameSteps) {
+  if (loginWithNameStep === LoginWithNameSteps.GET_DOMAIN_NAME) {
+    // At this step we want the user to see the input name modal, not the loading modal
+    setTextState(undefined);
+    return;
+  }
+
   const displayText = loginWithNameStep ? loginWithNameStepDescriptions[loginWithNameStep] : undefined;
   setTextState(displayText);
 }

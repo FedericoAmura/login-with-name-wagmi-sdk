@@ -3,6 +3,7 @@ import { sepolia } from "wagmi/chains";
 
 import { LitIdENS } from "../lib/nameResolvers/LitIdENS";
 import { loginWithName } from "../lib/loginWithName";
+import { requestName } from "./inputName";
 import { showLoading } from "./loading";
 
 const nameResolver = new LitIdENS({
@@ -30,13 +31,7 @@ export const config = createConfig({
         reloadOnDisconnect: false,
         toggleLoading: showLoading,
         nameResolver,
-        getDomainName: async () => {
-          let domainName;
-          do {
-            domainName = prompt("Enter your domain name");
-          } while (!domainName);
-          return domainName;
-        }
+        getDomainName: requestName,
       },
     }),
   ],
