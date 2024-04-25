@@ -45,4 +45,13 @@ export const records: Record[] = [
       },
     ],
   },
+  {
+    address: "0xb7E455Da04309A5D4b8E2b34aD0cc6B28dAD8C69",
+    authFlows: [
+      {
+        connection: Connection.WC,
+        URI: "http://localhost:3000/wallet",
+      },
+    ],
+  },
 ]
