@@ -1,25 +1,25 @@
 import { type Address } from "viem";
-// import { DWR } from "@lit-protocol/domainwallet-sdk"; // TODO We need version 0.1.0 published
+import { DWR } from "@lit-protocol/domainwallet-sdk";
 
 import { type NameResolver } from "./NameResolver";
 
-export interface LitIdProps {
+export interface LitIdOptions {
   litNetwork: "cayenne" | "manzano" | "habanero";
 }
 
 export class LitId implements NameResolver {
-  // private readonly dwr: DWR;
+  private readonly dwr: DWR;
 
-  constructor(options: LitIdProps) {
-    // this.dwr = new DWR(options.litNetwork);
+  constructor(options: LitIdOptions) {
+    this.dwr = new DWR(options.litNetwork);
   }
 
   async resolveName(domainName: string): Promise<Address | null> {
-    // await this.dwr.connect()
-    // const accountInfo = await this.dwr.getAccountInfo(domainName);
-    // if (accountInfo) {
-    //   return accountInfo.pkpEthAddress as Address;
-    // }
+    await this.dwr.connect()
+    const accountInfo = await this.dwr.getAccountInfo(domainName);
+    if (accountInfo) {
+      return accountInfo.pkpEthAddress as Address;
+    }
     return null;
   }
 
