@@ -20,7 +20,11 @@ export class LitIdENS implements NameResolver {
   }
 
   async resolveAuthenticator(name: string): Promise<string | null> {
-    return await this.litId.resolveAuthenticator(name) ?? await this.ens.resolveAuthenticator(name);
+    const litIdResolves = await this.litId.resolveName(name);
+    if (!!litIdResolves) {
+      return this.litId.resolveAuthenticator(name);
+    }
+    return this.ens.resolveAuthenticator(name);
   }
 
 }
