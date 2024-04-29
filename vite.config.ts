@@ -7,4 +7,8 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
+  build: {
+    outDir: "demo",
+    emptyOutDir: true,
+  },
 })
