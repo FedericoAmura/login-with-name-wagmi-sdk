@@ -1,10 +1,11 @@
 import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
 import http from "http";
 import url from "url";
 
-import { records } from "./records";
+const prisma = new PrismaClient()
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
   res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
@@ -17,11 +18,18 @@ const server = http.createServer((req, res) => {
     const { address } = query;
 
     if (address) {
-      const record = records.find((record) => record.address === address);
+      const record = await prisma.record.findUnique({
+        where: {
+          address: address as string,
+        },
+      });
 
       if (record) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(record));
+        res.end(JSON.stringify({
+          address: record.address,
+          authFlows: record.authFlows,
+        }));
       } else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Record not found');
@@ -42,4 +50,8 @@ const server = http.createServer((req, res) => {
 const port = 3001;
 server.listen(port, () => {
   console.log(`Authenticator service running at port ${port}`);
+});
+
+server.on('close', async () => {
+  await prisma.$disconnect();
 });
