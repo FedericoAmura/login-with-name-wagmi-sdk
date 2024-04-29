@@ -12,7 +12,7 @@
   "scripts": {
     "db:migrate": "prisma migrate dev",
     "dev": "run-p dev:*",
-    "dev:authenticator": "npx tsx watch ./authenticator",
+    "dev:authenticator": "tsx watch ./authenticator",
     "dev:web": "vite",
     "build": "run-s build:*",
     "build:lib": "tsup lib/index.ts --dts",
@@ -24,7 +24,7 @@
     "release": "npm run check && npm run build && changeset publish",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "css-check": "ts-node --esm ./scripts/css-check.ts"
+    "css-check": "tsx ./scripts/css-check.ts"
   },
   "dependencies": {
     "@lit-protocol/domainwallet-sdk": "^0.2.1",
@@ -70,8 +70,8 @@
     "recursive-readdir": "^2.2.3",
     "rollup-plugin-postcss": "^4.0.2",
     "storybook": "^7.0.0-beta.33",
-    "ts-node": "^10.9.1",
     "tsup": "^8.0.2",
+    "tsx": "^4.7.3",
     "type-fest": "^3.5.4",
     "typescript": "^5.4.5",
     "vite": "^4.0.0",
