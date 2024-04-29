@@ -12,7 +12,7 @@
   "scripts": {
     "db:migrate": "prisma migrate dev",
     "dev": "run-p dev:*",
-    "dev:authenticator": "tsx watch ./authenticator",
+    "dev:authenticator": "npx prisma generate && tsx watch ./authenticator",
     "dev:web": "vite",
     "build": "run-s build:*",
     "build:lib": "tsup lib/index.ts --dts",
