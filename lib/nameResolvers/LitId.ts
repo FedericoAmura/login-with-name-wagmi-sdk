@@ -11,7 +11,9 @@ export class LitId implements NameResolver {
   private readonly dwr: DWR;
 
   constructor(options: LitIdOptions) {
-    this.dwr = new DWR(options.litNetwork);
+    this.dwr = new DWR({
+      litNetwork: options.litNetwork,
+    });
   }
 
   async resolveName(domainName: string): Promise<Address | null> {
