@@ -1,13 +1,14 @@
 import { createConnector, type CreateConnectorFn } from "@wagmi/core";
-import WCProvider, { EthereumProvider } from "@walletconnect/ethereum-provider";
+import type WCProvider from "@walletconnect/ethereum-provider";
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import {
   getAddress,
   type Address,
   type Chain,
-  EIP1193Provider,
-  ProviderConnectInfo,
-  ProviderRpcError,
-  ProviderMessage,
+  type EIP1193Provider,
+  type ProviderConnectInfo,
+  type ProviderRpcError,
+  type ProviderMessage,
   UserRejectedRequestError,
 } from "viem";
 import { mainnet } from "viem/chains";
@@ -206,7 +207,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             const provider = await EthereumProvider.init({
               projectId: options.wcConfig.projectId,
               metadata: options.wcConfig.metadata,
-              chains: [options.chain?.id ?? mainnet.id], // TODO should use optionalChains for better multichain compatibility
+              chains: [parameters?.chainId ?? options.chain?.id ?? mainnet.id], // TODO should use optionalChains for better multichain compatibility
               showQrModal: !willOpenURI,
               qrModalOptions: {
                 desktopWallets: [],
@@ -301,7 +302,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
 
         return this.provider.request({ method: "eth_chainId" });
       },
-      async getProvider(parameters) {
+      async getProvider() {
         if (!this.provider) {
           throw new Error("Provider not connected");
         }
@@ -340,7 +341,9 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
         const chainId = Number(chain)
         config.emitter.emit("change", { chainId });
       },
-      onConnect(connectInfo: ProviderConnectInfo) {},
+      onConnect(connectInfo: ProviderConnectInfo) {
+        console.log("Connected to provider", connectInfo);
+      },
       onDisconnect(error) {
         if (error) console.error(error);
 

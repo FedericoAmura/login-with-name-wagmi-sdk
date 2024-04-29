@@ -1,4 +1,4 @@
-import { type Address, type Chain, createPublicClient, http, PublicClient } from "viem";
+import { type Address, type Chain, createPublicClient, http, type PublicClient } from "viem";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
 
