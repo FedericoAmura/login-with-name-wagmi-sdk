@@ -47,7 +47,7 @@ const server = http.createServer(async (req, res) => {
   res.end('Not Found');
 });
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 server.listen(port, () => {
   console.log(`Authenticator service running at port ${port}`);
 });
