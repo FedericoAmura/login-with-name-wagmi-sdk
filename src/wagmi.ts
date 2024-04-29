@@ -24,7 +24,7 @@ export const config = createConfig({
           metadata: {
             name: "Login with Name",
             description: "Log in with a domain name",
-            url: "localhost:5173", // origin must match your domain & subdomain
+            url: window.location.origin,
             icons: ['https://avatars.githubusercontent.com/u/37784886']
           },
         },

@@ -41,7 +41,7 @@ export const records: Record[] = [
     authFlows: [
       {
         connection: Connection.WC,
-        URI: "http://localhost:3000/wallet",
+        URI: `${process.env.DOMAIN_WALLETS_URL}/wallet`,
       },
     ],
   },
@@ -50,7 +50,7 @@ export const records: Record[] = [
     authFlows: [
       {
         connection: Connection.WC,
-        URI: "http://localhost:3000/wallet",
+        URI: `${process.env.DOMAIN_WALLETS_URL}/wallet`,
       },
     ],
   },

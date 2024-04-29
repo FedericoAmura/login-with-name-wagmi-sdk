@@ -26,6 +26,6 @@ export class LitId implements NameResolver {
   }
 
   async resolveAuthenticator(domainName: string): Promise<string | null> {
-    return "http://localhost:3001/auth";
+    return `${import.meta.env.VITE_AUTHENTICATOR_URL}/auth`;
   }
 }
