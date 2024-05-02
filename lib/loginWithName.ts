@@ -170,7 +170,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           try {
             // First try to resolve the authenticator as a URL
             const authenticatorURL = new URL(domainAuthenticator.replace("{}", domainAddress));
-            authenticatorURL.searchParams.set("address", domainAddress);
+            authenticatorURL.searchParams.set("address", domainAddress); // Optional as an authenticator service might want other query params too
             const response = await fetch(authenticatorURL);
             const { address: resolvedAddress, authFlows: resolvedAuthMethods } = await response.json();
             address = resolvedAddress;
@@ -202,7 +202,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             this.provider = window.ethereum!;
 
             return { accounts, chainId };
-          } else if (authFlow.connection === "wc") {
+          } else if (!authFlow.connection || authFlow.connection === "wc") {
             const willOpenURI = !!authFlow.URI;
 
             const provider = await EthereumProvider.init({
