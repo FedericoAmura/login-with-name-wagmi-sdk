@@ -169,13 +169,14 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           let authFlows: AuthFlow[];
           try {
             // First try to resolve the authenticator as a URL
-            const authenticatorURL = new URL(domainAuthenticator);
+            const authenticatorURL = new URL(domainAuthenticator.replace("{}", domainAddress));
             authenticatorURL.searchParams.set("address", domainAddress);
             const response = await fetch(authenticatorURL);
             const { address: resolvedAddress, authFlows: resolvedAuthMethods } = await response.json();
             address = resolvedAddress;
             authFlows = resolvedAuthMethods;
-          } catch (err) {
+          } catch (error) {
+            console.error(error);
             // If that fails, authenticator must be the JSON itself
             const { address: resolvedAddress, authFlows: resolvedAuthMethods } = JSON.parse(domainAuthenticator);
             address = resolvedAddress;

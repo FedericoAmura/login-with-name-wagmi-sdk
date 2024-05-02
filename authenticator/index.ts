@@ -1,57 +1,68 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import http from "http";
-import url from "url";
+import bodyParser from "body-parser";
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
 
 const prisma = new PrismaClient()
+const app = express();
+const port = process.env.PORT || 3001;
 
-const server = http.createServer(async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-  res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
-  res.setHeader('Access-Control-Allow-Headers', 'content-type');
+// Middlewares
+app.use(helmet());
+app.use(cors());
+app.use(bodyParser.json());
 
-  const parsedUrl = url.parse(req.url!, true);
-
-  if (parsedUrl.pathname?.startsWith("/auth")) {
-    const { query } = parsedUrl;
-    const { address } = query;
-
-    if (address) {
-      const record = await prisma.record.findUnique({
-        where: {
-          address: address as string,
-        },
+// Register route
+app.post("/register", async (req, res) => {
+  try {
+    const { address, authFlows } = req.body;
+    if (address && authFlows) {
+      const record = await prisma.record.upsert({
+        where: { address },
+        update: { authFlows },
+        create: { address, authFlows },
       });
-
-      if (record) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          address: record.address,
-          authFlows: record.authFlows,
-        }));
-      } else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Record not found');
-      }
+      res.status(200).json({ address: record.address, authFlows: record.authFlows });
     } else {
-      res.writeHead(400, { 'Content-Type': 'text/plain' });
-      res.end('Missing domain or address query parameters');
+      res.status(400).send("Missing address or authFlows in request body");
     }
-
-    return;
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+    res.status(400).send("Invalid request body");
   }
-
-  // Wrong pathname 404 Not Found
-  res.writeHead(404, { 'Content-Type': 'text/plain' });
-  res.end('Not Found');
 });
 
-const port = process.env.PORT || 3001;
-server.listen(port, () => {
+// Authentication route
+app.get("/auth/:address?", async (req, res) => {
+  const address = req.params.address || req.query.address;
+  if (address) {
+    const record = await prisma.record.findUnique({
+      where: { address: address as string },
+    });
+    if (record) {
+      res.status(200).json({ address: record.address, authFlows: record.authFlows });
+    } else {
+      res.status(404).send("Record not found");
+    }
+  } else {
+    res.status(400).send("Missing domain or address query parameters");
+  }
+});
+
+// Handle 404 for other routes
+app.use((req, res) => {
+  res.status(404).send("Not Found");
+});
+
+// Start the server
+app.listen(port, () => {
   console.log(`Authenticator service running at port ${port}`);
 });
 
-server.on('close', async () => {
+// Graceful shutdown
+process.on("SIGINT", async () => {
   await prisma.$disconnect();
+  process.exit();
 });
