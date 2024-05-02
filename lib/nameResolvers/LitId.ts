@@ -25,7 +25,14 @@ export class LitId implements NameResolver {
     return null;
   }
 
-  async resolveAuthenticator(): Promise<string | null> {
-    return `${import.meta.env.VITE_AUTHENTICATOR_URL}/auth`;
+  async resolveAuthenticator(domainName: string): Promise<string | null> {
+    const domainAddress = await this.resolveName(domainName);
+    if (domainAddress) {
+      return JSON.stringify({
+        address: domainAddress,
+        authFlows: [{ URI: `${import.meta.env.VITE_LIT_ID_URL}/wallet`}],
+      });
+    }
+    return null;
   }
 }
