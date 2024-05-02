@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useSignMessage } from "wagmi";
 
-import Verifying from "./Verifying";
+import { Verifying } from "./verifying";
 
 export interface SigningProps {}
 
-function Signing({}: SigningProps) {
+export function Signing({}: SigningProps) {
   const [message, setMessage] = useState("");
   const { signMessage, data } = useSignMessage();
 
@@ -20,7 +20,7 @@ function Signing({}: SigningProps) {
     <div style={{ maxWidth: "800px" }}>
       <form onSubmit={submitMessage}>
         <input type="text" placeholder="Message to sign" value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button type="submit" style={{ backgroundColor: "lightgreen" }}>Sign Message</button>
+        <button type="submit" style={{ backgroundColor: "lightgreen", marginTop: "20px"}}>Sign Message</button>
       </form>
       {data && (
         <>
@@ -32,5 +32,3 @@ function Signing({}: SigningProps) {
     </div>
   );
 }
-
-export default Signing;

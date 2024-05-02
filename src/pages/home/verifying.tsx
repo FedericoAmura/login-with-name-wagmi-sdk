@@ -6,7 +6,7 @@ export interface VerifyingProps {
   signature: Hex;
 }
 
-function Verifying({ message, signature }: VerifyingProps) {
+export function Verifying({ message, signature }: VerifyingProps) {
   const verification = useVerifyMessage({
     message,
     signature,
@@ -18,5 +18,3 @@ function Verifying({ message, signature }: VerifyingProps) {
     </>
   );
 }
-
-export default Verifying;

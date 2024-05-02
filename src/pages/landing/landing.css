@@ -1,0 +1,20 @@
+.step-register {
+    display: flex;
+    flex-direction: column;
+}
+
+.registration-routes {
+    display: flex;
+    flex-direction: row;
+    margin-top: 32px;
+}
+
+.registration-option {
+    display: flex;
+    flex-direction: column;
+    margin: 0 64px;
+}
+
+.step-done {
+    margin-top: 32px;
+}

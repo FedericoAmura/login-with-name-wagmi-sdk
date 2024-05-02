@@ -27,7 +27,10 @@
     "css-check": "tsx ./scripts/css-check.ts"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@lit-protocol/domainwallet-sdk": "^0.2.1",
+    "@mui/joy": "^5.0.0-beta.36",
     "@prisma/client": "^5.13.0",
     "@tanstack/react-query": "^5.29.2",
     "@walletconnect/ethereum-provider": "^2.12.2",
@@ -41,6 +44,7 @@
     "prisma": "^5.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.23.0",
     "viem": "^2.9.18",
     "wagmi": "^2.5.19"
   },
