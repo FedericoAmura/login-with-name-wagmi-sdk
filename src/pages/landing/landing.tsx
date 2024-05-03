@@ -29,22 +29,22 @@ export function Landing({}: LandingProps) {
           <div className="registration-option">
             <h3>Easy route</h3>
 
-            <p>Getting a wallet that is already named and integrated. The ideal option for users.</p>
-            <p>You can get a <a href={import.meta.env.VITE_LIT_ID_URL} target="_blank">Lit.id</a> wallet, they are already named and integrated into this demo</p>
-            <Link to={'/litid'}>
+            <p>Getting a wallet that is already named and integrated. This is the ideal option for dApp users.
+            <br />You can get a <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a>, they are already named and integrated into this demo</p>
+            <Link to={'/domainWallet'}>
               <button>
                 <img src="/key.png" alt="Login With Name" />
-                Create LitId wallet
+                Create Domain Wallet
               </button>
             </Link>
-            <p style={{ color: "red" }}>Warning: <a href={import.meta.env.VITE_LIT_ID_URL} target="_blank">Lit.id</a> is currently in beta and should only be used for testing purposes</p>
+            <p style={{ color: "red" }}>Warning: <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a> is currently in beta and should only be used for testing purposes</p>
           </div>
 
           <div className="registration-option">
             <h3>Advanced route</h3>
 
-            <p>Setting up the config for your own wallets. The path that wallet and dApp devs have to follow.</p>
-            <p>We will guide you setting up the authentication flows config and name resolver</p>
+            <p>Setting up the config for your own wallets. This is the path that wallet and dApp developers have to follow.
+            <br />We will guide you setting up the authentication flows config and name resolver</p>
             <div>
             {/*<Link to={'/register'}>*/}
               <button>
@@ -71,7 +71,7 @@ export function Landing({}: LandingProps) {
           That's all! After registering you will be able to log in any <span>Login with Name</span> integrated dApp.<br />
           Not just this one, as long as other dApps integrate the same name resolvers you can use your name to log in.
         </p>
-        <p>No more remembering complex addresses, or where you have their keys</p>
+        <p>No more remembering complex addresses, or where you have their keys. Just your name ✨</p>
       </div>
     </div>
   );

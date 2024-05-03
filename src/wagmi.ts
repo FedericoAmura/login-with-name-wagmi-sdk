@@ -1,13 +1,13 @@
 import { http, createConfig } from "wagmi";
 import { sepolia } from "wagmi/chains";
 
-import { LitIdENS } from "../lib/nameResolvers/LitIdENS";
+import { DomainWalletENS } from "../lib/nameResolvers/DomainWalletENS";
 import { loginWithName } from "../lib/loginWithName";
 import { requestName } from "./inputName";
 import { showLoading } from "./loading";
 
-const nameResolver = new LitIdENS({
-  litNetwork: "cayenne",
+const nameResolver = new DomainWalletENS({
+  litNetwork: import.meta.env.VITE_LIT_NETWORK || "cayenne",
   chain: sepolia,
 });
 

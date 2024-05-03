@@ -3,14 +3,14 @@ import { DWR } from "@lit-protocol/domainwallet-sdk";
 
 import { type NameResolver } from "./NameResolver";
 
-export interface LitIdOptions {
+export interface DomainWalletOptions {
   litNetwork: "cayenne" | "manzano" | "habanero";
 }
 
-export class LitId implements NameResolver {
+export class DomainWallet implements NameResolver {
   private readonly dwr: DWR;
 
-  constructor(options: LitIdOptions) {
+  constructor(options: DomainWalletOptions) {
     this.dwr = new DWR({
       litNetwork: options.litNetwork,
     });
@@ -30,7 +30,7 @@ export class LitId implements NameResolver {
     if (domainAddress) {
       return JSON.stringify({
         address: domainAddress,
-        authFlows: [{ URI: `${import.meta.env.VITE_LIT_ID_URL}/wallet`}],
+        authFlows: [{ URI: `${import.meta.env.VITE_DOMAIN_WALLET_URL}/wallet`}],
       });
     }
     return null;

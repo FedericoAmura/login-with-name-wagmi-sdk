@@ -1,3 +1,3 @@
 export * from "./ENS";
-export * from "./LitId";
+export * from "./DomainWallet";
 export * from "./NameResolver";

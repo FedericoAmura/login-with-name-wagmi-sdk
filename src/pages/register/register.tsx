@@ -202,7 +202,7 @@ export function Register({}: RegisterProps) {
                           <li>injected (default, for extensions in your browser)</li>
                           <li>io.metamask (EIP-6963 support coming soon)</li>
                           <li>org.toshi (Android+MWP only, APK name)</li>
-                          <li>https://lit.id/wallet (for web wallets)</li>
+                          <li>https://domainwallet.id/wallet (for web wallets)</li>
                         </ul>
                       </Box>
                     }

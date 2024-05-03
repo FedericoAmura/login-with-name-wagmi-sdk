@@ -7,8 +7,8 @@ const useNavigation = () => {
     navigate("/");
   }
 
-  const goToLitId = () => {
-    navigate("/litid");
+  const goToDomainWallet = () => {
+    navigate("/domainWallet");
   }
 
   const goToRegister = () => {
@@ -21,7 +21,7 @@ const useNavigation = () => {
 
   return {
     goToRoot,
-    goToLitId,
+    goToDomainWallet,
     goToRegister,
     goToHome,
   };
