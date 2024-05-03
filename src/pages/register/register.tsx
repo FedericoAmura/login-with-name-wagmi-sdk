@@ -9,7 +9,7 @@ import Typography from "@mui/joy/Typography";
 import { Link } from 'react-router-dom';
 
 import "./register.css";
-import { AuthFlow, Connection, Platform } from "../../../lib/loginWithName";
+import { type AuthFlow, Connection, Platform } from "../../../lib/loginWithName";
 
 export interface RegisterProps {}
 
@@ -48,7 +48,7 @@ export function Register({}: RegisterProps) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      await response.json();
       alert("Success! Now you can go back, link your name and authenticator in ENS and start using your name to log in!");
     } catch (error) {
       console.error("Error:", error);

@@ -15,10 +15,6 @@ const useNavigation = () => {
     navigate("/register");
   }
 
-  const goToRegistered = () => {
-    navigate("/registered");
-  }
-
   const goToHome = () => {
     navigate("/home");
   }
@@ -27,7 +23,6 @@ const useNavigation = () => {
     goToRoot,
     goToLitId,
     goToRegister,
-    goToRegistered,
     goToHome,
   };
 }

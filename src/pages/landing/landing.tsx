@@ -7,7 +7,7 @@ import useNavigation from "../../hooks/useNavigation";
 export interface LandingProps {}
 
 export function Landing({}: LandingProps) {
-  const { connectors, connect, status, error } = useConnect();
+  const { connectors, connect } = useConnect();
   const { goToHome } = useNavigation();
   const loginWithNameConnector = connectors.find((c) => c.id === 'loginWithName')!;
 

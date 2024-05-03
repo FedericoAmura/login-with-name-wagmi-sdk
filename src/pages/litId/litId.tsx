@@ -9,7 +9,7 @@ export interface LitIdProps {}
 export function LitId({}: LitIdProps) {
   const [name, setName] = useState<string>("");
   const [validation, setValidation] = useState<"success" | "error" | null>(null);
-  const { goToRoot, goToRegistered } = useNavigation();
+  const { goToRoot } = useNavigation();
 
   const openLitId = () => {
     window.open(import.meta.env.VITE_LIT_ID_URL, "_blank");
