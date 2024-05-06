@@ -1,6 +1,7 @@
 import { createConnector, type CreateConnectorFn } from "@wagmi/core";
 import type WCProvider from "@walletconnect/ethereum-provider";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import { createStore } from "mipd";
 import {
   getAddress,
   type Address,
@@ -132,6 +133,9 @@ type WagmiConnector = {
   initializeEventListeners(): void;
 };
 
+// EIP-6963: https://eips.ethereum.org/EIPS/eip-6963
+const eip6963Store = createStore();
+
 export function loginWithName(parameters: LoginWithNameParameters): CreateConnectorFn {
   return createConnector<EIP1193Provider>((config) => {
     const { options } = parameters;
@@ -192,14 +196,24 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           options.toggleLoading(LoginWithNameSteps.TRIGGER_AUTHENTICATION);
           const authFlow = authFlows[0]!; // TODO safely select this auth flow based on platform and supported methods
 
-          if (authFlow.URI === "injected") {
-            const accounts = await window.ethereum!.request({ method: "eth_requestAccounts" });
+          if (authFlow.URI) {
+            let provider: EIP1193Provider | undefined;
+            if (authFlow.URI === "injected") {
+              provider = window.ethereum!;
+            } else {
+              provider = eip6963Store.findProvider({ rdns: authFlow.URI })?.provider;
+            }
+            if (!provider) {
+              throw new Error("Provider not found");
+            }
+
+            const accounts = await provider.request({ method: "eth_requestAccounts" });
             if (!accounts.includes(domainAddress.toLowerCase() as Address)) {
               throw new Error("Injected provider does not have the domain address");
             }
-            const chainHex = await window.ethereum!.request({ method: "eth_chainId" });
+            const chainHex = await provider.request({ method: "eth_chainId" });
             const chainId = parseInt(chainHex, 16);
-            this.provider = window.ethereum!;
+            this.provider = provider;
 
             return { accounts, chainId };
           } else if (!authFlow.connection || authFlow.connection === "wc") {
