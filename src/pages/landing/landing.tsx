@@ -59,11 +59,13 @@ export function Landing({}: LandingProps) {
 
       <div className="step-login">
         <h3>2. Then we will find your wallet on any integrated name resolvers just with your name 🚀</h3>
-        <p>Click the button below to authenticate and log in just with your name</p>
-        <button onClick={() => connect({ connector: loginWithNameConnector }, { onSuccess: goToHome })}>
-          <img src="/loginWithName.png" alt="Login With Name" />
-          Login With Name
-        </button>
+        <p>Click the button below to check your balance and sign messages</p>
+        <Link to={'/home'}>
+          <button>
+            <img src="/loginWithName.png" alt="Login With Name" />
+            Get into dApp
+          </button>
+        </Link>
       </div>
 
       <div className="step-done">
