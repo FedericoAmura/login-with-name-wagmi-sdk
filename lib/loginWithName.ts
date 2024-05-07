@@ -214,6 +214,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             const chainHex = await provider.request({ method: "eth_chainId" });
             const chainId = parseInt(chainHex, 16);
             this.provider = provider;
+            this.initializeEventListeners();
 
             return { accounts, chainId };
           } else if (!authFlow.connection || authFlow.connection === "wc") {
@@ -381,7 +382,9 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
 
         this.provider.on("accountsChanged", this.boundOnAccountsChanged);
         this.provider.on("chainChanged", this.boundOnChainChanged);
+        this.provider.on("connect", this.boundOnConnect);
         this.provider.on("disconnect", this.boundOnDisconnect);
+        this.provider.on("message", this.boundOnMessage);
       },
     }
 
