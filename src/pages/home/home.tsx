@@ -21,7 +21,7 @@ export function Home({}: HomeProps) {
   const ensName = useEnsName({
     address: account.addresses?.[0],
   });
-  const loginWithNameConnector = connectors.find((c) => c.id === 'loginWithName')!;
+  const loginWithNameConnector = connectors.find((c) => c.id === "loginWithName")!;
 
   const disconnectConnectors = () => {
     connectedConnectors.forEach((connector) => {
