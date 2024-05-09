@@ -24,14 +24,14 @@ export function Landing({}: LandingProps) {
             <h3>Easy route</h3>
 
             <p>Getting a wallet that is already named and integrated. This is the ideal option for dApp users.
-            <br />You can get a <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a>, they are already named and integrated into this demo</p>
+            <br />You can get a <a href="https://domainwallet.id" target="_blank">Domain Wallet</a>, they are already named and integrated into this demo</p>
             <Link to={'/domainWallet'}>
               <button>
                 <img src="/key.png" alt="Login With Name" />
                 Create Domain Wallet
               </button>
             </Link>
-            <p style={{ color: "red" }}>Warning: <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a> is currently in beta and should only be used for testing purposes</p>
+            <p style={{ color: "red" }}>Warning: <a href="https://domainwallet.id" target="_blank">Domain Wallet</a> is currently in beta and should only be used for testing purposes</p>
           </div>
 
           <div className="registration-option">

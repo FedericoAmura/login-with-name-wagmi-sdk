@@ -1,5 +1,5 @@
-import { type Address } from "viem";
 import { DWR } from "@lit-protocol/domainwallet-sdk";
+import { type Address } from "viem";
 
 import { type NameResolver } from "./NameResolver";
 
@@ -30,7 +30,7 @@ export class DomainWallet implements NameResolver {
     if (domainAddress) {
       return JSON.stringify({
         address: domainAddress,
-        authFlows: [{ URI: `${import.meta.env.VITE_DOMAIN_WALLET_URL}/wallet`}],
+        authFlows: [{ URI: "https://domainwallet.id/wallet"}],
       });
     }
     return null;

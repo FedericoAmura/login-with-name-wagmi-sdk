@@ -12,7 +12,7 @@ export function DomainWallet({}: DomainWalletProps) {
   const { goToRoot } = useNavigation();
 
   const openDomainWallets = () => {
-    window.open(import.meta.env.VITE_DOMAIN_WALLET_URL, "_blank");
+    window.open("https://domainwallet.id", "_blank");
   }
 
   const validateName = async (event: any) => {
@@ -37,15 +37,15 @@ export function DomainWallet({}: DomainWalletProps) {
 
   return (
     <div>
-      <h1>Create your <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a> named wallet</h1>
+      <h1>Create your <a href="https://domainwallet.id" target="_blank">Domain Wallet</a> named wallet</h1>
 
       <div>
-        <h3>1. Go to <a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a> and create your wallet</h3>
+        <h3>1. Go to <a href="https://domainwallet.id" target="_blank">Domain Wallet</a> and create your wallet</h3>
         <p>Once that is created we can validate below if it can be found using just your domain</p>
         <button onClick={openDomainWallets}>Open Domain Wallet</button>
         <p style={{ color: 'red' }}>
           <span>Remember</span>
-          {' '}<a href={import.meta.env.VITE_DOMAIN_WALLET_URL} target="_blank">Domain Wallet</a>
+          {' '}<a href="https://domainwallet.id" target="_blank">Domain Wallet</a>
           {' '}is on beta, don't use that wallet for anything important.
         </p>
       </div>
