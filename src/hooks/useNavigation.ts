@@ -11,8 +11,12 @@ const useNavigation = () => {
     navigate("/domainWallet");
   }
 
-  const goToRegister = () => {
-    navigate("/register");
+  const goToRegisterName = () => {
+    navigate("/registerName");
+  }
+
+  const goToRegisterAuthFlows = () => {
+    navigate("/registerAuthFlows");
   }
 
   const goToHome = () => {
@@ -22,7 +26,8 @@ const useNavigation = () => {
   return {
     goToRoot,
     goToDomainWallet,
-    goToRegister,
+    goToRegisterName,
+    goToRegisterAuthFlows,
     goToHome,
   };
 }

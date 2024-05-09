@@ -6,17 +6,19 @@ import Stack from "@mui/joy/Stack";
 import Textarea from "@mui/joy/Textarea";
 import Tooltip from "@mui/joy/Tooltip";
 import Typography from "@mui/joy/Typography";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-import "./register.css";
+import "./registerAuthFlows.css";
+import useNavigation from "../../hooks/useNavigation";
 import { type AuthFlow, Connection, Platform } from "../../../lib/loginWithName";
 
 export interface RegisterProps {}
 
-export function Register({}: RegisterProps) {
+export function RegisterAuthFlows({}: RegisterProps) {
   const [address, setAddress] = useState<string | null>(null);
   const [authFlows, setAuthFlows] = useState<AuthFlow[]>([{ connection: Connection.WC }]);
   const [error, setError] = useState<Error | null>(null);
+  const { goToRoot, goToRegisterName } = useNavigation();
 
   const addAuthFlow = async (event: any) => {
     event.preventDefault();
@@ -64,6 +66,14 @@ export function Register({}: RegisterProps) {
         variant="plain"
       >
         Register your name authenticator flows
+      </Typography>
+      <Typography
+        sx={{ color: 'white' }}
+        variant="plain"
+      >
+        After getting your wallet, we also have to define how we are going to find and request authentication for that same wallet<br />
+        For this, we will define authentication flows, which will tell the connector where your wallet is accessible and how it will try to connect with it<br /><br />
+        You can define several authentication flows. For example, you can define one for the browser and another for mobile, or one for WalletConnect and another for a custom protocol<br />
       </Typography>
 
       <form onSubmit={submit}>
@@ -200,9 +210,9 @@ export function Register({}: RegisterProps) {
                         <div>The location where the wallet can be found and triggered. For example:</div>
                         <ul>
                           <li>injected (default, for extensions in your browser)</li>
-                          <li>io.metamask (EIP-6963 support coming soon)</li>
+                          <li>io.metamask (EIP-6963)</li>
                           <li>org.toshi (Android+MWP only, APK name)</li>
-                          <li>https://domainwallet.id/wallet (for web wallets)</li>
+                          <li>https://domainwallet.id/wallet (for web wallets or magic links)</li>
                         </ul>
                       </Box>
                     }
@@ -233,9 +243,8 @@ export function Register({}: RegisterProps) {
           <button type="button" onClick={addAuthFlow}>+</button>
         </div>
         <div className="button-bar" style={{ marginTop: "64px" }}>
-          <Link to={"/"}>
-            <button type="button">Back</button>
-          </Link>
+          <button type="button" onClick={goToRoot}>Back to start</button>
+          <button type="button" onClick={goToRegisterName}>Back to name</button>
           <button type="submit" style={{ backgroundColor: "lightgreen" }}>Register flows</button>
         </div>
       </form>
