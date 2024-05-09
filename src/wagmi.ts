@@ -16,7 +16,6 @@ export const config = createConfig({
   connectors: [
     loginWithName({
       options: {
-        jsonRpcUrl: "https://eth.llamarpc.com",
         debug: true,
         chain: sepolia,
         wcConfig: {

@@ -15,7 +15,7 @@ import {
 import { mainnet } from "viem/chains";
 import "viem/window"; // To set types for window.ethereum
 
-import { type NameResolver } from "./nameResolvers";
+import { type NameResolver, ENS } from "./nameResolvers";
 
 export enum LoginWithNameSteps {
   GET_DOMAIN_NAME = "get-domain-name",
@@ -43,18 +43,14 @@ export interface AuthFlow {
 
 export type Options = {
   /**
-   * RPC URL for the provider. Will be used to resolve domain names in ENS.
-   */
-  jsonRpcUrl: string;
-  /**
    * Function to get the domain name for the login
    * The connector will use this function to get the domain name
    */
   getDomainName: () => Promise<string> | string;
   /**
-   *
+   * Name resolver to use for the provider
    */
-  nameResolver: NameResolver;
+  nameResolver?: NameResolver;
   /**
    * Chain to use for the provider
    * @default mainnet
@@ -80,7 +76,7 @@ export type Options = {
   /**
    * Function to toggle loading state so dapp can show corresponding loading UI
    */
-  toggleLoading: (step?: LoginWithNameSteps) => void;
+  toggleLoading?: (step?: LoginWithNameSteps) => void;
   /**
    * Whether to print debug info
    * @default false
@@ -153,22 +149,23 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
       },
       async connect(parameters) {
         try {
-          options.toggleLoading(LoginWithNameSteps.GET_DOMAIN_NAME);
+          options.toggleLoading?.(LoginWithNameSteps.GET_DOMAIN_NAME);
           let domainName = await options.getDomainName();
           if (!domainName) {
             throw new Error("Domain name not provided");
           }
 
-          options.toggleLoading(LoginWithNameSteps.RESOLVE_DOMAIN_NAME);
+          options.toggleLoading?.(LoginWithNameSteps.RESOLVE_DOMAIN_NAME);
+          const nameResolver = options.nameResolver || new ENS({ chain: options.chain });
           const [domainAddress, domainAuthenticator] = await Promise.all([
-            options.nameResolver.resolveName(domainName),
-            options.nameResolver.resolveAuthenticator(domainName),
+            nameResolver.resolveName(domainName),
+            nameResolver.resolveAuthenticator(domainName),
           ]);
           if (!domainAddress || !domainAuthenticator) {
             throw new Error(`Could not resolve domain address or authenticator. Check Name Resolver records. Obtained address: ${domainAddress} and authenticator: ${domainAuthenticator}`);
           }
 
-          options.toggleLoading(LoginWithNameSteps.RESOLVE_AUTHENTICATOR);
+          options.toggleLoading?.(LoginWithNameSteps.RESOLVE_AUTHENTICATOR);
           let address: Address;
           let authFlows: AuthFlow[];
           try {
@@ -193,7 +190,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           }
 
           // Run the corresponding auth flow
-          options.toggleLoading(LoginWithNameSteps.TRIGGER_AUTHENTICATION);
+          options.toggleLoading?.(LoginWithNameSteps.TRIGGER_AUTHENTICATION);
           const authFlow = authFlows[0]!; // TODO safely select this auth flow based on platform and supported methods
 
           if (authFlow.URI) {
@@ -272,7 +269,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           }
           throw error
         } finally {
-          options.toggleLoading();
+          options.toggleLoading?.();
         }
       },
       async disconnect() {
