@@ -23,9 +23,9 @@ export const config = createConfig({
           projectId: import.meta.env.VITE_WC_PROJECT_ID,
           metadata: {
             name: "Login with Name",
-            description: "Log in with a domain name",
+            description: "Log in with your own name",
             url: window.location.origin,
-            icons: ['https://avatars.githubusercontent.com/u/37784886']
+            icons: ['https://github.com/FedericoAmura/login-with-name-wagmi-sdk/blob/main/public/loginWithName.png?raw=true']
           },
         },
         reloadOnDisconnect: false,
