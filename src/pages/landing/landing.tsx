@@ -1,16 +1,10 @@
-import { Link } from 'react-router-dom';
-import { useConnect } from "wagmi";
+import { Link } from "react-router-dom";
 
 import "./landing.css";
-import useNavigation from "../../hooks/useNavigation";
 
 export interface LandingProps {}
 
 export function Landing({}: LandingProps) {
-  const { connectors, connect } = useConnect();
-  const { goToHome } = useNavigation();
-  const loginWithNameConnector = connectors.find((c) => c.id === 'loginWithName')!;
-
   return (
     <div>
       <h1>Login with Name CAIP demo</h1>
@@ -46,7 +40,7 @@ export function Landing({}: LandingProps) {
             <p>Setting up the config for your own wallets. This is the path that wallet and dApp developers have to follow.
             <br />We will guide you setting up the authentication flows config and name resolver</p>
             <div>
-            {/*<Link to={'/register'}>*/}
+            {/*<Link to={'/registerName'}>*/}
               <button>
                 <img src="/key.png" alt="Login With Name" />
                 Register wallet (Coming soon)

@@ -6,7 +6,6 @@ import Stack from "@mui/joy/Stack";
 import Textarea from "@mui/joy/Textarea";
 import Tooltip from "@mui/joy/Tooltip";
 import Typography from "@mui/joy/Typography";
-import { Link } from "react-router-dom";
 
 import "./registerAuthFlows.css";
 import useNavigation from "../../hooks/useNavigation";
