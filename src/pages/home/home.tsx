@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   useAccount,
   useBalance,
@@ -58,6 +59,12 @@ export function Home({}: HomeProps) {
             <img src="/loginWithName.png" alt="Login With Name" />
             Login With Name
           </button>
+
+          <div className="wallet-options">
+            <h3>Don't have a login with name linked wallet?</h3>
+            <p>Click <Link to={'/domainWallet'}>Here</Link> to get a domain linked wallet ready to use!</p>
+            <p>Linking your existing Crypto Domain to a Auth Provider is coming soon</p>
+          </div>
         </>
       )}
     </div>

@@ -37,12 +37,12 @@ export function DomainWallet({}: DomainWalletProps) {
 
   return (
     <div>
-      <h1>Create your <a href="https://domainwallet.id" target="_blank">Domain Wallet</a> named wallet</h1>
+      <h1>Create your <a href="https://domainwallet.id" target="_blank">Domain Wallet</a></h1>
 
       <div>
-        <h3>1. Go to <a href="https://domainwallet.id" target="_blank">Domain Wallet</a> and create your wallet</h3>
+        <h3>1. Go to <a href="https://domainwallet.id" target="_blank">domainwallet.id</a> and create your wallet there</h3>
         <p>Once that is created we can validate below if it can be found using just your domain</p>
-        <button onClick={openDomainWallets}>Open Domain Wallet</button>
+        <button onClick={openDomainWallets}>Open domainwallet.id</button>
         <p style={{ color: 'red' }}>
           <span>Remember</span>
           {' '}<a href="https://domainwallet.id" target="_blank">Domain Wallet</a>
@@ -50,12 +50,19 @@ export function DomainWallet({}: DomainWalletProps) {
         </p>
       </div>
 
-      <div>
+      <div className="centered-column">
         <h3>2. Validate it can be found (optional)</h3>
-        <p>Once you have your Domain Wallet, enter its full domain here and validate if we can find it</p>
+        <p>Once you have your Domain Wallet, enter its full domain here and validate we can find it</p>
         <form className="validation-form" onSubmit={validateName}>
-          <input type="text" placeholder="yourdomain.domainwallet.id" value={name}
-                 onChange={(e) => setName(e.target.value)} />
+          <input
+            type="text"
+            placeholder="vitalik.domainwallet.id"
+            value={name}
+            onChange={(e) => {
+              setValidation(null);
+              setName(e.target.value);
+            }}
+          />
           <button style={{ marginTop: "24px" }} type="submit">Check name</button>
         </form>
         {validation === "success" && <p>Your wallet is accessible! You are ready to continue ✅</p>}
