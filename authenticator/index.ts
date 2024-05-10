@@ -4,6 +4,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import { createPublicClient, http } from "viem";
+import { sepolia } from "viem/chains";
 
 const prisma = new PrismaClient()
 const app = express();
@@ -17,14 +19,25 @@ app.use(bodyParser.json());
 // Register route
 app.post("/register", async (req, res) => {
   try {
-    const { address, authFlows } = req.body;
-    if (address && authFlows) {
-      const record = await prisma.record.upsert({
-        where: { address },
-        update: { authFlows },
-        create: { address, authFlows },
+    const { name, authFlows } = req.body;
+    if (name && authFlows) {
+      const client = createPublicClient({
+        chain: sepolia,
+        transport: http(),
       });
-      res.status(200).json({ address: record.address, authFlows: record.authFlows });
+
+      const [address, record] = await Promise.all([
+        client.getEnsAddress({
+          name,
+        }),
+        prisma.record.upsert({
+          where: { name },
+          update: { authFlows },
+          create: { name, authFlows },
+        }),
+      ]);
+
+      res.status(200).json({ address, authFlows: record.authFlows, name });
     } else {
       res.status(400).send("Missing address or authFlows in request body");
     }
@@ -35,19 +48,29 @@ app.post("/register", async (req, res) => {
 });
 
 // Authentication route
-app.get("/auth/:address?", async (req, res) => {
-  const address = req.params.address || req.query.address;
-  if (address) {
-    const record = await prisma.record.findUnique({
-      where: { address: address as string },
+app.get("/auth/:name?", async (req, res) => {
+  const name = req.params.name || req.query.name;
+  if (name) {
+    const client = createPublicClient({
+      chain: sepolia,
+      transport: http(),
     });
+
+    const [address, record] = await Promise.all([
+      client.getEnsAddress({
+        name: name as string,
+      }),
+      prisma.record.findUnique({
+        where: { name: name as string },
+      }),
+    ]);
     if (record) {
-      res.status(200).json({ address: record.address, authFlows: record.authFlows });
+      res.status(200).json({ address: address, authFlows: record.authFlows, name });
     } else {
       res.status(404).send("Record not found");
     }
   } else {
-    res.status(400).send("Missing domain or address query parameters");
+    res.status(400).send("Missing name parameter");
   }
 });
 

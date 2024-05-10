@@ -170,8 +170,8 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           let authFlows: AuthFlow[];
           try {
             // First try to resolve the authenticator as a URL
-            const authenticatorURL = new URL(domainAuthenticator.replace("{}", domainAddress));
-            authenticatorURL.searchParams.set("address", domainAddress); // Optional as an authenticator service might want other query params too
+            const authenticatorURL = new URL(domainAuthenticator.replace("{}", domainName));
+            authenticatorURL.searchParams.set("name", domainName); // Optional but an authenticator service might want other query params too
             const response = await fetch(authenticatorURL);
             const { address: resolvedAddress, authFlows: resolvedAuthMethods } = await response.json();
             address = resolvedAddress;
