@@ -158,6 +158,11 @@ The connector receives an object with several attributes to customize its behavi
 
 A working demo can be accessed at [this link](https://login-with-name-wagmi-sdk.vercel.app/)
 
+The source of the website can be found in the `src` folder. The website provides a way to prompt the user for their names using a modal. After users have logged in, they can see their account information, sign a test message and disconnect from the wallet.
+Apart from that, the website demo provides instructions to get a named wallet such as [Domain Wallet](https://domainwallet.id) or use ENS to name any wallet that you can reference within the authentication flows.
+
+There is also a server in the `authenticator` directory, whose sole responsibility is to store and handle authentication configurations for given domain names.
+
 # How it works?
 
 The connector uses the CAIP-275 standard to resolve the domain name to an authentication flow. The authentication flow is then used to authenticate the user and connect the wallet.
@@ -171,3 +176,7 @@ There are several steps involved in this process
 4. The connector will then use the authentication flow configuration to authenticate the user and connect the wallet as described in the [CAIP-275][] standard.
 
 [CAIP-275]: https://github.com/ChainAgnostic/CAIPs/pull/275
+
+# Contributing
+
+This project is open to contributions. Feel free to open an issue or a pull request.
