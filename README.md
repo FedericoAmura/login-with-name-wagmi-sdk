@@ -32,6 +32,7 @@ const nameResolver = new ENS({
 });
 
 const requestName = async () => {
+  // Here you can prompt the user for their name
   return "vitalik.eth";
 };
 
@@ -46,7 +47,6 @@ const lwnConfig = {
         icons: ['https://avatars.githubusercontent.com/u/37784886']
       },
     },
-    toggleLoading: showLoading,
     nameResolver,
     getDomainName: requestName,
   },
