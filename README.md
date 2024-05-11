@@ -137,22 +137,23 @@ npm install login-with-name
 
 The connector receives an object with several attributes to customize its behavior.
 
-| Param                                 | Description                                                                                                                         | Required | Default |
-|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
-| options                               | Object with the following attributes                                                                                                | Yes      | -       |
-| options.getDomainName                 | Function that returns the domain name to be used in the login. Will be called at connection                                         | Yes      | -       |
-| options.nameResolver                  | Instance of a class that implements the `NameResolver` interface. Will be used to resolve domain names and get authentication flows | No       | ENS     |
-| options.chain                         | Chain the connector will use                                                                                                        | No       | mainnet |
-| options.wcConfig                      | Configuration object for WalletConnect as specified in [their docs](https://docs.walletconnect.com/advanced/providers/ethereum)     | Yes      | -       |
-| options.wcConfig.projectId            | WalletConnect project ID                                                                                                            | Yes      | -       |
-| options.wcConfig.metadata             | Metadata object for the WalletConnect EthereumProvider provider                                                                     | Yes      | -       |
-| options.wcConfig.metadata.name        | Name of the dApp                                                                                                                    | Yes      | -       |
-| options.wcConfig.metadata.description | Description of the dApp                                                                                                             | Yes      | -       |
-| options.wcConfig.metadata.url         | URL of the dApp                                                                                                                     | Yes      | -       |
-| options.wcConfig.metadata.icons       | Array of URLs for the dApp icons                                                                                                    | Yes      | -       |
-| options.reloadOnDisconnect            | Whether to reload the connection when the user disconnects                                                                          | No       | false   |
-| options.toggleLoading                 | Function to toggle loading state so dapp can show corresponding loading UI and inform the user what is happening                    | No       | -       |
-| options.debug                         | Whether to log debug messages                                                                                                       | No       | false   |
+| Param                                 | Description                                                                                                                                                                        | Required | Default |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| options                               | Object with the following attributes                                                                                                                                               | Yes      | -       |
+| options.getDomainName                 | Function that returns the domain name to be used in the login. Will be called at connection                                                                                        | Yes      | -       |
+| options.openWCUri                     | Function that notifies dApp about the WalletConnect URI, domain name, address and wallet URI. Will be called when connector requests connection from a wallet using Wallet Connect | No       | -       |
+| options.nameResolver                  | Instance of a class that implements the `NameResolver` interface. Will be used to resolve domain names and get authentication flows                                                | No       | ENS     |
+| options.chain                         | Chain the connector will use                                                                                                                                                       | No       | mainnet |
+| options.wcConfig                      | Configuration object for WalletConnect as specified in [their docs](https://docs.walletconnect.com/advanced/providers/ethereum)                                                    | Yes      | -       |
+| options.wcConfig.projectId            | WalletConnect project ID                                                                                                                                                           | Yes      | -       |
+| options.wcConfig.metadata             | Metadata object for the WalletConnect EthereumProvider provider                                                                                                                    | Yes      | -       |
+| options.wcConfig.metadata.name        | Name of the dApp                                                                                                                                                                   | Yes      | -       |
+| options.wcConfig.metadata.description | Description of the dApp                                                                                                                                                            | Yes      | -       |
+| options.wcConfig.metadata.url         | URL of the dApp                                                                                                                                                                    | Yes      | -       |
+| options.wcConfig.metadata.icons       | Array of URLs for the dApp icons                                                                                                                                                   | Yes      | -       |
+| options.reloadOnDisconnect            | Whether to reload the connection when the user disconnects                                                                                                                         | No       | false   |
+| options.toggleLoading                 | Function to toggle loading state so dapp can show corresponding loading UI and inform the user what is happening                                                                   | No       | -       |
+| options.debug                         | Whether to log debug messages                                                                                                                                                      | No       | false   |
 
 # Demo
 

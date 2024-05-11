@@ -6,6 +6,7 @@ import { WagmiProvider } from "wagmi";
 import App from "./App";
 import { config } from "./wagmi";
 
+import { Connect } from "./connect";
 import { InputName } from "./inputName";
 import { Loading } from "./loading";
 
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <App />
+        <Connect />
         <InputName />
         <Loading />
       </QueryClientProvider>

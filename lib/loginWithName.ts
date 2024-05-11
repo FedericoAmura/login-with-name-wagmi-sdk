@@ -48,6 +48,11 @@ export type Options = {
    */
   getDomainName: () => Promise<string> | string;
   /**
+   * Function to pass the dApp the wcUri, domain name, address and wallet URI
+   * This way dApp can show the QR code and open the wallet URI with a button if the auto-open fails
+   */
+  openWCUri?: (wcUri: string, domainName: string, address: Address, walletUri?: string) => void;
+  /**
    * Name resolver to use for the provider
    */
   nameResolver?: NameResolver;
@@ -238,6 +243,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
                 addressAuthenticationURL.searchParams.set("address", domainAddress!);
                 addressAuthenticationURL.searchParams.set("wcUri", uri);
                 window.open(addressAuthenticationURL, "_blank");
+                options.openWCUri?.(uri, domainName, domainAddress!, addressAuthenticationURL.toString());
               }
               provider.on("display_uri", handleUri);
             }

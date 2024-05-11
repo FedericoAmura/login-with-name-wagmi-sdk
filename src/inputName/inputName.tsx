@@ -1,12 +1,14 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
 
 import "./inputName.css";
+import { showLoading } from "../loading";
 
 let setVisibleState: Dispatch<SetStateAction<boolean>>;
 let namePromiseResolver: (name: string) => void;
 let namePromiseRejecter: (error: Error) => void;
 
 export async function requestName(): Promise<string> {
+  showLoading(); // Remove loading modal if it's open
   return new Promise<string>((resolve, reject) => {
     namePromiseResolver = resolve;
     namePromiseRejecter = reject;

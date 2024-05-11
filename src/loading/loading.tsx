@@ -14,12 +14,6 @@ const loginWithNameStepDescriptions: Record<LoginWithNameSteps, string> = {
 };
 
 export function showLoading(loginWithNameStep?: LoginWithNameSteps) {
-  if (loginWithNameStep === LoginWithNameSteps.GET_DOMAIN_NAME) {
-    // At this step we want the user to see the input name modal, not the loading modal
-    setTextState(undefined);
-    return;
-  }
-
   const displayText = loginWithNameStep ? loginWithNameStepDescriptions[loginWithNameStep] : undefined;
   setTextState(displayText);
 }
