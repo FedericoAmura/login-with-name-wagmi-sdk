@@ -194,19 +194,38 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             throw new Error("Address mismatch between name resolver and auth flow provider");
           }
 
-          // Run the corresponding auth flow
-          options.toggleLoading?.(LoginWithNameSteps.TRIGGER_AUTHENTICATION);
-          const authFlow = authFlows[0]!; // TODO safely select this auth flow based on platform and supported methods
+          // Find the first supported auth flow
+          const authFlow = authFlows.filter((authFlow => {
+            if (authFlow.platform === Platform.MOBILE || authFlow.connection === Connection.MWP) {
+              // TODO Mobile, and therefore MWP, are not supported by this connector yet
+              return false;
+            }
+            if (authFlow.connection === Connection.EXTENSION) {
+              if (!authFlow.URI || authFlow.URI === "injected") {
+                // Check if injected provider is available
+                return !!window.ethereum;
+              } else {
+                // Check if provider with such URI is available
+                return !!eip6963Store.findProvider({ rdns: authFlow.URI });
+              }
+            }
 
-          if (authFlow.URI) {
+            return true;
+          }))[0];
+          if (!authFlow) {
+            throw new Error("No supported auth flow found");
+          }
+
+          options.toggleLoading?.(LoginWithNameSteps.TRIGGER_AUTHENTICATION);
+          if (authFlow.connection === Connection.EXTENSION) {
             let provider: EIP1193Provider | undefined;
-            if (authFlow.URI === "injected") {
+            if (!authFlow.URI || authFlow.URI === "injected") {
               provider = window.ethereum!;
             } else {
               provider = eip6963Store.findProvider({ rdns: authFlow.URI })?.provider;
             }
             if (!provider) {
-              throw new Error("Provider not found");
+              throw new Error("Auth flow requested provider not found. Should have been filtered before or provider become unavailable");
             }
 
             const accounts = await provider.request({ method: "eth_requestAccounts" });
@@ -238,7 +257,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             if (willOpenURI) {
               // TODO pass the dapp the WC URI and this URL so it can show WC QR and open the URL with a button if this auto-open fails (might be blocked by browser)
               function handleUri(uri: string) {
-                const addressAuthenticationURL = new URL(authFlow.URI!);
+                const addressAuthenticationURL = new URL(authFlow!.URI!);
                 addressAuthenticationURL.searchParams.set("domain", domainName!);
                 addressAuthenticationURL.searchParams.set("address", domainAddress!);
                 addressAuthenticationURL.searchParams.set("wcUri", uri);
@@ -262,7 +281,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
 
             return { accounts, chainId };
           } else {
-            throw new Error("Unsupported auth method");
+            throw new Error("Unsupported auth flow.");
           }
 
         } catch (error) {
