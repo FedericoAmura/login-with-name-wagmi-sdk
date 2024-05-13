@@ -1,7 +1,7 @@
 <div align="center">
 <h1>Login with Name Wagmi Connector</h1>
 
-<img src="./public/loginWithName.png">
+<img src="https://github.com/FedericoAmura/login-with-name-wagmi-sdk/blob/main/public/loginWithName.png?raw=true">
 
 A [Wagmi](https://wagmi.sh/) connector that follows [CAIP-275][],
 allowing you to add login with name into your dApp for any EMV chain.
