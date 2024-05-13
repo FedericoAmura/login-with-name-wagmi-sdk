@@ -3,30 +3,19 @@ import type { Address } from "viem";
 
 import "./connect.css";
 import { showLoading } from "../loading";
+import { WCConnectionData } from "../../lib/loginWithName";
 
-let setConnectionPropsState: Dispatch<SetStateAction<ConnectionProps | undefined>>;
+let setConnectionPropsState: Dispatch<SetStateAction<WCConnectionData | undefined>>;
 
-export function showConnect(wcUri: string, domainName: string, address: Address, walletUri?: string) {
+export function toggleWCUri(wcConnectionData: WCConnectionData | undefined) {
   showLoading(); // Remove loading modal if it's open
-  setConnectionPropsState({
-    wcUri,
-    domainName,
-    address,
-    walletUri,
-  });
-}
-
-interface ConnectionProps {
-  wcUri: string;
-  domainName: string;
-  address: Address;
-  walletUri?: string;
+  setConnectionPropsState(wcConnectionData);
 }
 
 interface ConnectProps {}
 
 export function Connect({}: ConnectProps) {
-  const [connectionProps, setConnectionProps] = useState<ConnectionProps | undefined>();
+  const [connectionProps, setConnectionProps] = useState<WCConnectionData | undefined>();
   setConnectionPropsState = setConnectionProps;
 
   if (!connectionProps) {

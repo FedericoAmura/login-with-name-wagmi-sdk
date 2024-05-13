@@ -41,6 +41,13 @@ export interface AuthFlow {
   URI?: string;
 }
 
+export type WCConnectionData = {
+  wcUri: string;
+  domainName: string;
+  address: Address;
+  walletUri?: string;
+};
+
 export type Options = {
   /**
    * Function to get the domain name for the login
@@ -51,7 +58,7 @@ export type Options = {
    * Function to pass the dApp the wcUri, domain name, address and wallet URI
    * This way dApp can show the QR code and open the wallet URI with a button if the auto-open fails
    */
-  openWCUri?: (wcUri: string, domainName: string, address: Address, walletUri?: string) => void;
+  toggleWCUri?: (wcUriConnectionData: WCConnectionData | undefined) => void;
   /**
    * Name resolver to use for the provider
    */
@@ -262,7 +269,12 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
                 addressAuthenticationURL.searchParams.set("address", domainAddress!);
                 addressAuthenticationURL.searchParams.set("wcUri", uri);
                 window.open(addressAuthenticationURL, "_blank");
-                options.openWCUri?.(uri, domainName, domainAddress!, addressAuthenticationURL.toString());
+                options.toggleWCUri?.({
+                  wcUri: uri,
+                  domainName,
+                  address: domainAddress!,
+                  walletUri: addressAuthenticationURL.toString(),
+                });
               }
               provider.on("display_uri", handleUri);
             }
@@ -295,6 +307,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           throw error
         } finally {
           options.toggleLoading?.();
+          options.toggleWCUri?.(undefined);
         }
       },
       async disconnect() {

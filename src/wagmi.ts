@@ -3,7 +3,7 @@ import { sepolia } from "wagmi/chains";
 
 import { DomainWalletENS } from "../lib/nameResolvers/DomainWalletENS";
 import { loginWithName } from "../lib/loginWithName";
-import { showConnect } from "./connect";
+import { toggleWCUri } from "./connect";
 import { requestName } from "./inputName";
 import { showLoading } from "./loading";
 
@@ -32,7 +32,7 @@ export const config = createConfig({
         toggleLoading: showLoading,
         nameResolver,
         getDomainName: requestName,
-        openWCUri: showConnect,
+        toggleWCUri: toggleWCUri,
       },
     }),
   ],
