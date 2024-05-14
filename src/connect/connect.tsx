@@ -1,5 +1,4 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
-import type { Address } from "viem";
 
 import "./connect.css";
 import { showLoading } from "../loading";
