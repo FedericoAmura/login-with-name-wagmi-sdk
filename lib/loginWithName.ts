@@ -262,7 +262,6 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             });
 
             if (willOpenURI) {
-              // TODO pass the dapp the WC URI and this URL so it can show WC QR and open the URL with a button if this auto-open fails (might be blocked by browser)
               function handleUri(uri: string) {
                 const addressAuthenticationURL = new URL(authFlow!.URI!);
                 addressAuthenticationURL.searchParams.set("domain", domainName!);
