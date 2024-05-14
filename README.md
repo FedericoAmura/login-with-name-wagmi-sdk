@@ -141,7 +141,7 @@ The connector receives an object with several attributes to customize its behavi
 |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
 | options                               | Object with the following attributes                                                                                                                                               | Yes      | -       |
 | options.getDomainName                 | Function that returns the domain name to be used in the login. Will be called at connection                                                                                        | Yes      | -       |
-| options.openWCUri                     | Function that notifies dApp about the WalletConnect URI, domain name, address and wallet URI. Will be called when connector requests connection from a wallet using Wallet Connect | No       | -       |
+| options.toggleWCUri                   | Function that notifies dApp about the WalletConnect URI, domain name, address and wallet URI. Will be called when connector requests connection from a wallet using Wallet Connect | No       | -       |
 | options.nameResolver                  | Instance of a class that implements the `NameResolver` interface. Will be used to resolve domain names and get authentication flows                                                | No       | ENS     |
 | options.chain                         | Chain the connector will use                                                                                                                                                       | No       | mainnet |
 | options.wcConfig                      | Configuration object for WalletConnect as specified in [their docs](https://docs.walletconnect.com/advanced/providers/ethereum)                                                    | Yes      | -       |
@@ -152,7 +152,7 @@ The connector receives an object with several attributes to customize its behavi
 | options.wcConfig.metadata.url         | URL of the dApp                                                                                                                                                                    | Yes      | -       |
 | options.wcConfig.metadata.icons       | Array of URLs for the dApp icons                                                                                                                                                   | Yes      | -       |
 | options.reloadOnDisconnect            | Whether to reload the connection when the user disconnects                                                                                                                         | No       | false   |
-| options.toggleLoading                 | Function to toggle loading state so dapp can show corresponding loading UI and inform the user what is happening                                                                   | No       | -       |
+| options.toggleLoading                 | Function to toggle loading state so dApp can show corresponding loading UI and inform the user what is happening                                                                   | No       | -       |
 | options.debug                         | Whether to log debug messages                                                                                                                                                      | No       | false   |
 
 # Demo
@@ -162,19 +162,21 @@ A working demo can be accessed at [this link](https://login-with-name-wagmi-sdk.
 The source of the website can be found in the `src` folder. The website provides a way to prompt the user for their names using a modal. After users have logged in, they can see their account information, sign a test message and disconnect from the wallet.
 Apart from that, the website demo provides instructions to get a named wallet such as [Domain Wallet](https://domainwallet.id) or use ENS to name any wallet that you can reference within the authentication flows.
 
-There is also a server in the `authenticator` directory, whose sole responsibility is to store and handle authentication configurations for given domain names.
+There is also a server in the `authenticator` directory, whose sole responsibility is to store and handle authentication configurations for given names.
 
 # How it works?
 
-The connector uses the CAIP-275 standard to resolve the domain name to an authentication flow. The authentication flow is then used to authenticate the user and connect the wallet.
+The connector uses the CAIP-275 standard to resolve the name, their authentication flows and to find and connect with the indicated wallet.
 
-CAIP-275 is a standard that allows you to resolve a domain name to an authentication flow. The authentication flow is a JSON object that contains the necessary information to authenticate the user and connect the wallet.
+[CAIP-275][] is a standard that allows you to resolve a name to authentication flows.
+An authentication flow is a JSON object that contains the necessary information to authenticate the user and connect the wallet.
 
 There are several steps involved in this process
 1. When the user clicks on the "Login with Name" button, the connector will call the `getDomainName` function to get the domain name.
 2. The connector will then use the `NameResolver` to resolve the domain name to an address and to authentication configuration. This last configuration is saved in a text record called `authenticator` for that same domain name.
 3. If the authentication configuration is an URL, the connector will resolve the URL and get the actual authentication configuration.
 4. The connector will then use the authentication flow configuration to authenticate the user and connect the wallet as described in the [CAIP-275][] standard.
+5. Once the wallet connects back, the connector will handle the connection between dApp and wallet.
 
 [CAIP-275]: https://github.com/ChainAgnostic/CAIPs/pull/275
 
