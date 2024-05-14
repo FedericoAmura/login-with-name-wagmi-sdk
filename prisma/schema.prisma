@@ -12,5 +12,6 @@ model Record {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   @unique
+  chain     String?
   authFlows Json
 }

@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 // Register route
 app.post("/register", async (req, res) => {
   try {
-    const { name, authFlows } = req.body;
+    const { name, authFlows, chain } = req.body;
     if (name && authFlows) {
       const client = createPublicClient({
         chain: sepolia,
@@ -32,14 +32,14 @@ app.post("/register", async (req, res) => {
         }),
         prisma.record.upsert({
           where: { name },
-          update: { authFlows },
-          create: { name, authFlows },
+          update: { authFlows, chain },
+          create: { name, authFlows, chain },
         }),
       ]);
 
-      res.status(200).json({ address, authFlows: record.authFlows, name });
+      res.status(200).json({ address, authFlows: record.authFlows, chain, name });
     } else {
-      res.status(400).send("Missing address or authFlows in request body");
+      res.status(400).send("Missing name or authFlows in request body");
     }
   } catch (error) {
     console.error("Error parsing JSON:", error);
@@ -65,7 +65,7 @@ app.get("/auth/:name?", async (req, res) => {
       }),
     ]);
     if (record) {
-      res.status(200).json({ address: address, authFlows: record.authFlows, name });
+      res.status(200).json({ address: address, authFlows: record.authFlows, name, chain: record.chain });
     } else {
       res.status(404).send("Record not found");
     }
