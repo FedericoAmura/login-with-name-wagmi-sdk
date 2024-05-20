@@ -14,7 +14,7 @@ import {
 import _ from "lodash";
 import React, { useCallback, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
-import { createPublicClient, http, EIP1193Provider, type Address } from "viem";
+import { createPublicClient, http, type EIP1193Provider, type Address } from "viem";
 import { sepolia } from "viem/chains";
 import { normalize } from "viem/ens";
 

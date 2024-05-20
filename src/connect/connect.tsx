@@ -2,7 +2,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 
 import "./connect.css";
 import { showLoading } from "../loading";
-import { WCConnectionData } from "../../lib/loginWithName";
+import { type WCConnectionData } from "../../lib/loginWithName";
 
 let setConnectionPropsState: Dispatch<SetStateAction<WCConnectionData | undefined>>;
 
