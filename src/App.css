@@ -101,6 +101,7 @@ input {
 
 button {
     background-color: white; /* White background */
+    height: 36px;
     color: #333;
     padding: 10px 20px;
     border-radius: 25px;
