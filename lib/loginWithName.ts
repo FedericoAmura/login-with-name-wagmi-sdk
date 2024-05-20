@@ -197,7 +197,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           }
 
           // Validate that the address in the authenticator matches the address resolved from the domain
-          if (domainAddress !== address) {
+          if (domainAddress.toLowerCase() !== address.toLowerCase()) {
             throw new Error("Address mismatch between name resolver and auth flow provider");
           }
 
