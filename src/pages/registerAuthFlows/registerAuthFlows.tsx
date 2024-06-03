@@ -151,12 +151,18 @@ export function RegisterAuthFlows({}: RegisterProps) {
     setError(null);
     setLoading(true);
     try {
+      const authenticatorAuthFlows: AuthFlow[] = authFlows.map((af) => ({
+        platform: af.platform === PLATFORM_EVERYWHERE ? undefined : af.platform,
+        connection: af.connection,
+        URI: af.URI ? af.URI : undefined,
+      }));
+
       const response = await fetch(`${import.meta.env.VITE_AUTHENTICATOR_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, authFlows }),
+        body: JSON.stringify({ name, authFlows: authenticatorAuthFlows }),
       });
 
       if (!response.ok) {
@@ -181,7 +187,7 @@ export function RegisterAuthFlows({}: RegisterProps) {
     const ensAuthFlows: AuthFlow[] = authFlows.map((af) => ({
       platform: af.platform === PLATFORM_EVERYWHERE ? undefined : af.platform,
       connection: af.connection,
-      URI: af.URI,
+      URI: af.URI ? af.URI : undefined,
     }));
 
     navigator.clipboard.writeText(JSON.stringify(ensAuthFlows));
