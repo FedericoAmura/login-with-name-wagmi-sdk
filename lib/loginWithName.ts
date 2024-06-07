@@ -236,7 +236,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             }
 
             const accounts = await provider.request({ method: "eth_requestAccounts" });
-            if (!accounts.includes(domainAddress.toLowerCase() as Address)) {
+            if (!accounts.map((a) => a.toLowerCase()).includes(domainAddress.toLowerCase() as Address)) {
               throw new Error("Injected provider does not have the domain address");
             }
             const chainHex = await provider.request({ method: "eth_chainId" });
@@ -246,13 +246,11 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
 
             return { accounts, chainId };
           } else if (!authFlow.connection || authFlow.connection === "wc") {
-            const willOpenURI = !!authFlow.URI;
-
             const provider = await EthereumProvider.init({
               projectId: options.wcConfig.projectId,
               metadata: options.wcConfig.metadata,
               chains: [parameters?.chainId ?? options.chain?.id ?? mainnet.id], // TODO should use optionalChains for better multichain compatibility
-              showQrModal: !willOpenURI,
+              showQrModal: false,
               qrModalOptions: {
                 desktopWallets: [],
                 mobileWallets: [],
@@ -261,27 +259,28 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
               },
             });
 
-            if (willOpenURI) {
-              function handleUri(uri: string) {
-                const addressAuthenticationURL = new URL(authFlow!.URI!);
+            function handleUri(uri: string) {
+              let addressAuthenticationURL;
+              if (authFlow?.URI) {
+                addressAuthenticationURL = new URL(authFlow!.URI);
                 addressAuthenticationURL.searchParams.set("domain", domainName!);
                 addressAuthenticationURL.searchParams.set("address", domainAddress!);
                 addressAuthenticationURL.searchParams.set("wcUri", uri);
                 window.open(addressAuthenticationURL, "_blank");
-                options.toggleWCUri?.({
-                  wcUri: uri,
-                  domainName,
-                  address: domainAddress!,
-                  walletUri: addressAuthenticationURL.toString(),
-                });
               }
-              provider.on("display_uri", handleUri);
+              options.toggleWCUri?.({
+                wcUri: uri,
+                domainName,
+                address: domainAddress!,
+                walletUri: addressAuthenticationURL?.toString(),
+              });
             }
+            provider.on("display_uri", handleUri);
 
             await provider.connect();
 
             const accounts = provider.accounts as Address[];
-            if (!accounts.includes(domainAddress as Address)) {
+            if (!accounts.map((a) => a.toLowerCase()).includes(domainAddress.toLowerCase() as Address)) {
               provider.disconnect().catch(console.error);
               throw new Error("Remote provider does not have the domain address");
             }
