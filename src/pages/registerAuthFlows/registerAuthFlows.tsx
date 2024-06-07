@@ -142,9 +142,9 @@ export function RegisterAuthFlows({}: RegisterProps) {
     }
   };
 
-  const testAuthFlow = async (authFlow: PotentialAuthFlow) => {
-    console.log(authFlow);
-  }
+  // const testAuthFlow = async (authFlow: PotentialAuthFlow) => {
+  //   console.log(authFlow);
+  // }
 
   const submit = async (event: any) => {
     event.preventDefault();
@@ -266,9 +266,9 @@ export function RegisterAuthFlows({}: RegisterProps) {
                   >
                     Authenticator Flow {i + 1}
                   </Typography>
-                  <Box>
-                    <button type="button" onClick={() => testAuthFlow(flow)}>Test</button>
-                  </Box>
+                  {/*<Box>*/}
+                  {/*  <button type="button" onClick={() => testAuthFlow(flow)}>Test</button>*/}
+                  {/*</Box>*/}
                 </Box>
 
                 <Box className="auth-flow-config">
