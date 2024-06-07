@@ -246,11 +246,13 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
 
             return { accounts, chainId };
           } else if (!authFlow.connection || authFlow.connection === "wc") {
+            const handlesQRDisplay = "toggleWCUri" in options;
+
             const provider = await EthereumProvider.init({
               projectId: options.wcConfig.projectId,
               metadata: options.wcConfig.metadata,
               chains: [parameters?.chainId ?? options.chain?.id ?? mainnet.id], // TODO should use optionalChains for better multichain compatibility
-              showQrModal: false,
+              showQrModal: !handlesQRDisplay,
               qrModalOptions: {
                 desktopWallets: [],
                 mobileWallets: [],
@@ -259,23 +261,25 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
               },
             });
 
-            function handleUri(uri: string) {
-              let addressAuthenticationURL;
-              if (authFlow?.URI) {
-                addressAuthenticationURL = new URL(authFlow!.URI);
-                addressAuthenticationURL.searchParams.set("domain", domainName!);
-                addressAuthenticationURL.searchParams.set("address", domainAddress!);
-                addressAuthenticationURL.searchParams.set("wcUri", uri);
-                window.open(addressAuthenticationURL, "_blank");
+            if (handlesQRDisplay) {
+              function handleUri(uri: string) {
+                let addressAuthenticationURL;
+                if (authFlow?.URI) {
+                  addressAuthenticationURL = new URL(authFlow!.URI);
+                  addressAuthenticationURL.searchParams.set("domain", domainName!);
+                  addressAuthenticationURL.searchParams.set("address", domainAddress!);
+                  addressAuthenticationURL.searchParams.set("wcUri", uri);
+                  window.open(addressAuthenticationURL, "_blank");
+                }
+                options.toggleWCUri?.({
+                  wcUri: uri,
+                  domainName,
+                  address: domainAddress!,
+                  walletUri: addressAuthenticationURL?.toString(),
+                });
               }
-              options.toggleWCUri?.({
-                wcUri: uri,
-                domainName,
-                address: domainAddress!,
-                walletUri: addressAuthenticationURL?.toString(),
-              });
+              provider.on("display_uri", handleUri);
             }
-            provider.on("display_uri", handleUri);
 
             await provider.connect();
 
