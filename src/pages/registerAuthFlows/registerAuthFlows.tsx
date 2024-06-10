@@ -193,6 +193,12 @@ export function RegisterAuthFlows({}: RegisterProps) {
     navigator.clipboard.writeText(JSON.stringify(ensAuthFlows));
   }
 
+  const copyAuthenticatorURL = () => {
+    const authenticatorURL = new URL('https://login-with-name-wagmi-sdk.onrender.com/auth/{}');
+    authenticatorURL.searchParams.set("name", name || "");
+    navigator.clipboard.writeText(authenticatorURL.toString());
+  }
+
   return (
     <div className="register">
       <Typography
@@ -438,11 +444,21 @@ export function RegisterAuthFlows({}: RegisterProps) {
             variant="plain"
             noWrap
           >
-            Congratulations!
+            Register Authentication Flows in an authenticator service
           </Typography>
-          You have registered authentication flows in the authenticator service<br /><br />
+          To save your authentication flows in an authenticator service you have to follow the following steps:<br /><br />
+          1. Open ENS.
+          <button onClick={openENS} style={{ width: "420px" }}>Open ENS</button>
+          2. Search your name to edit a record in it.{name ? ` You used ${name}.` : ""}<br />
+          3. Go to the Records option.<br />
+          4. Add a Text record with the key "authenticator". Or edit it if it already exists.<br />
+          5. Fill the value of the "authenticator" record with the URL of your authenticator flows.<br />
+          <button onClick={copyAuthenticatorURL} style={{ width: "420px" }}>Copy authenticator URL to clipboard</button>
+          6. Save confirming the transaction with your wallet.<br />
+          7. Done! Your authenticator flows URL is now stored in ENS.<br /><br />
 
-          Now you can go back Home and log in to the dApp using just your name!
+          We already saved your authentication flows in our authenticator server.<br />
+          You can go back Home and log in to the dApp using your name.
         </ModalDialog>
       </Modal>
     </div>
