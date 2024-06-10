@@ -194,9 +194,7 @@ export function RegisterAuthFlows({}: RegisterProps) {
   }
 
   const copyAuthenticatorURL = () => {
-    const authenticatorURL = new URL('https://login-with-name-wagmi-sdk.onrender.com/auth/{}');
-    authenticatorURL.searchParams.set("name", name || "");
-    navigator.clipboard.writeText(authenticatorURL.toString());
+    navigator.clipboard.writeText('https://login-with-name-wagmi-sdk.onrender.com/auth/{}');
   }
 
   return (
