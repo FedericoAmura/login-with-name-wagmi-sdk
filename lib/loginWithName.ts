@@ -191,9 +191,8 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           } catch (error) {
             console.error(error);
             // If that fails, authenticator must be the JSON itself
-            const { address: resolvedAddress, authFlows: resolvedAuthMethods } = JSON.parse(domainAuthenticator);
-            address = resolvedAddress;
-            authFlows = resolvedAuthMethods;
+            address = domainAddress;
+            authFlows = JSON.parse(domainAuthenticator);
           }
 
           // Validate that the address in the authenticator matches the address resolved from the domain
