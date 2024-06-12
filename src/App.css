@@ -182,6 +182,14 @@ button:hover {
     height: 100%;
 }
 
+.simple-margin {
+    margin: 1em;
+}
+
+.no-margin {
+    margin: 0;
+}
+
 /* Add a background to the page with the image in ../public/background.png: */
 body {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
