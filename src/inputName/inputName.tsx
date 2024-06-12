@@ -24,8 +24,8 @@ export function InputName({}: InputNameProps) {
   setVisibleState = setVisible;
 
   const submitName = () => {
-    setVisible(false);
     if (name) {
+      setVisible(false);
       namePromiseResolver(name);
     }
   }
@@ -48,7 +48,7 @@ export function InputName({}: InputNameProps) {
             <input className="modal__content" id="modal-name-content" type="text" placeholder="Ex. vitalik.eth" value={name} onChange={(e) => setName(e.target.value)} />
             <div className="modal__lower">
               <button type="button" style={{ backgroundColor: "lightpink" }} onClick={() => cancel()}>Cancel</button>
-              <button type="submit" style={{ backgroundColor: "lightgreen" }}>Submit</button>
+              <button type="submit" disabled={!name} style={{ backgroundColor: name ? "lightgreen" : "lightgray" }}>Submit</button>
             </div>
           </form>
         </div>
