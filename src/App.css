@@ -126,6 +126,12 @@ button:hover {
     background-color: #f0f0f0; /* Slightly different background color on hover */
 }
 
+.error {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 0.5em;
+}
+
 .modal {
     position: fixed;
     top: 0;

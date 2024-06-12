@@ -174,7 +174,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             nameResolver.resolveAuthenticator(domainName),
           ]);
           if (!domainAddress || !domainAuthenticator) {
-            throw new Error(`Could not resolve domain address or authenticator. Check Name Resolver records. Obtained address: ${domainAddress} and authenticator: ${domainAuthenticator}`);
+            throw new Error(`Could not resolve domain address or authenticator`);
           }
 
           options.toggleLoading?.(LoginWithNameSteps.RESOLVE_AUTHENTICATOR);

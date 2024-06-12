@@ -14,7 +14,7 @@ export interface HomeProps {}
 
 export function Home({}: HomeProps) {
   const account = useAccount();
-  const { connect, connectors } = useConnect();
+  const { connect, connectors, error } = useConnect();
   const { disconnect, connectors: connectedConnectors } = useDisconnect();
   const balance = useBalance({
     address: account.addresses?.[0],
@@ -59,6 +59,10 @@ export function Home({}: HomeProps) {
             <img src="/loginWithName.png" alt="Login With Name" />
             Login With Name
           </button>
+
+          {error ? (
+            <p className="error">{error.message}</p>
+          ) : <></>}
 
           <div className="wallet-options">
             <h3>Don't have a login with name linked wallet?</h3>
