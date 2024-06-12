@@ -93,9 +93,8 @@ export function RegisterAuthFlows({}: RegisterProps) {
       } catch (error) {
         console.error(error);
         // If that fails, authenticator must be the JSON itself
-        const { address: resolvedAddress, authFlows: resolvedAuthMethods } = JSON.parse(domainAuthenticator);
-        address = resolvedAddress;
-        authFlows = resolvedAuthMethods;
+        address = ensAddress;
+        authFlows = JSON.parse(domainAuthenticator);
       }
 
       if (ensAddress.toLowerCase() !== address.toLowerCase()) {
