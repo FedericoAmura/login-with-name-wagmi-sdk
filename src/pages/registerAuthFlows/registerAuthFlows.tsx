@@ -120,9 +120,11 @@ export function RegisterAuthFlows({}: RegisterProps) {
       return;
     }
 
-    setName(name);
+    const clearedName = name.replace(/\s/g, "");
+
+    setName(clearedName);
     setAddress("Resolving...");
-    resolveName(name);
+    resolveName(clearedName);
   }
 
   const addAuthFlow = async (event: any) => {
@@ -242,6 +244,7 @@ export function RegisterAuthFlows({}: RegisterProps) {
                 className="auth-flow-param-input"
                 style={{ marginLeft: "16px", maxWidth: "350px" }}
                 disabled={false}
+                required
                 maxRows={1}
                 size="md"
                 variant="outlined"
