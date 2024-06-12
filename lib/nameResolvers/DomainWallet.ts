@@ -28,10 +28,7 @@ export class DomainWallet implements NameResolver {
   async resolveAuthenticator(domainName: string): Promise<string | null> {
     const domainAddress = await this.resolveName(domainName);
     if (domainAddress) {
-      return JSON.stringify({
-        address: domainAddress,
-        authFlows: [{ URI: "https://domainwallet.id/wallet"}],
-      });
+      return JSON.stringify([{ URI: "https://domainwallet.id/wallet"}]);
     }
     return null;
   }
