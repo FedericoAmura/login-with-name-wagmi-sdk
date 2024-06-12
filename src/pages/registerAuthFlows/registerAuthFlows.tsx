@@ -361,13 +361,14 @@ export function RegisterAuthFlows({}: RegisterProps) {
                       variant="outlined"
                       title={
                         <Box>
-                          <div>The location where the wallet can be found and triggered. For example:</div>
+                          The location where the wallet can be found and triggered. For example:
                           <ul>
-                            <li>injected (default, for extensions in your browser)</li>
-                            <li>io.metamask (EIP-6963)</li>
-                            <li>org.toshi (Android+MWP only, APK name)</li>
+                            <li>injected (for any extension in your browser)</li>
+                            <li>an EIP-6963 compliant wallet rdns (io.metamask, com.coinbase.wallet, etc.)</li>
+                            <li>a mobile app package name (Android+MWP only, org.toshi)</li>
                             <li>https://domainwallet.id/wallet (for web wallets or magic links)</li>
                           </ul>
+                          Leave it blank if you just want to use a wallet connect QR code or injected extension
                         </Box>
                       }
                     >
