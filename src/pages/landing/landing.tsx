@@ -24,7 +24,7 @@ export function Landing({}: LandingProps) {
             <h3>Easy route</h3>
 
             <p>Getting a wallet that is already named and integrated. This is the ideal option for dApp users.
-            <br />You can get a <a href="https://domainwallet.id" target="_blank">Domain Wallet</a>, they are already named and integrated into this demo</p>
+            <br />You can get a <a href="https://domainwallet.id/campaign/demo" target="_blank">Domain Wallet</a>, they are already named and integrated into this demo</p>
             <Link to={'/domainWallet'}>
               <button>
                 <img src="/key.png" alt="Login With Name" />

@@ -4,6 +4,8 @@ import { DWR } from "@lit-protocol/domainwallet-sdk";
 import "./domainWallet.css";
 import useNavigation from "../../hooks/useNavigation";
 
+const CLAIM_DW_URL = "https://domainwallet.id/campaign/demo";
+
 export interface DomainWalletProps {}
 
 export function DomainWallet({}: DomainWalletProps) {
@@ -13,7 +15,7 @@ export function DomainWallet({}: DomainWalletProps) {
   const { goToRoot } = useNavigation();
 
   const openDomainWallets = () => {
-    window.open("https://domainwallet.id", "_blank");
+    window.open(CLAIM_DW_URL, "_blank");
   }
 
   const validateName = async (event: any) => {
@@ -47,16 +49,16 @@ export function DomainWallet({}: DomainWalletProps) {
 
   return (
     <div className="centered-column">
-      <h1>Create your <a href="https://domainwallet.id" target="_blank">Domain Wallet</a></h1>
+      <h1>Create your <a href={CLAIM_DW_URL} target="_blank">Domain Wallet</a></h1>
 
       <div>
-        <h3>1. Go to <a href="https://domainwallet.id" target="_blank">domainwallet.id</a> and create your wallet there
+        <h3>1. Go to <a href={CLAIM_DW_URL} target="_blank">domainwallet.id</a> and create your wallet there
         </h3>
         <p>Once that is created we can validate below if it can be found using just your domain</p>
         <button onClick={openDomainWallets}>Open domainwallet.id</button>
         <p style={{ color: 'red' }}>
           <span>Remember</span>
-          {' '}<a href="https://domainwallet.id" target="_blank">Domain Wallet</a>
+          {' '}<a href={CLAIM_DW_URL} target="_blank">Domain Wallet</a>
           {' '}is on beta, don't use that wallet for anything important.
         </p>
       </div>
