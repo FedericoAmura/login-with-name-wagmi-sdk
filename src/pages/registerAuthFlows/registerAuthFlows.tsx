@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   CircularProgress,
   Modal,
@@ -12,7 +13,8 @@ import {
   Typography,
 } from "@mui/joy";
 import _ from "lodash";
-import React, { useCallback, useState } from "react";
+import { createStore } from "mipd";
+import React, { useCallback, useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { createPublicClient, http, type EIP1193Provider, type Address } from "viem";
 import { sepolia } from "viem/chains";
@@ -20,11 +22,14 @@ import { normalize } from "viem/ens";
 
 import "./registerAuthFlows.css";
 import useNavigation from "../../hooks/useNavigation";
-import { type AuthFlow, Connection, Platform } from "../../../lib/loginWithName";
+import { type Authenticator, type AuthFlow, Connection, Platform } from "../../../lib/loginWithName";
 
+const ADDRESS_NOT_FOUND = "0x...";
 const PLATFORM_EVERYWHERE = "everywhere";
 type EXTENDED_PLATFORM = Platform | typeof PLATFORM_EVERYWHERE;
 
+const eip6963Store = createStore();
+const wallets = ["injected", "https://domainwallet.id/wallet", ...eip6963Store.getProviders().map(p => p.info.rdns)];
 const publicClient = createPublicClient({
   chain: sepolia,
   transport: http(),
@@ -46,11 +51,18 @@ function newAuthFlow(id: number): PotentialAuthFlow {
   };
 }
 
+interface SelectedChain {
+  chainId: string;
+  label: string;
+}
+const EOA_CHAIN = { chainId: "", label: "No chain" };
+
 export interface RegisterProps {}
 
 export function RegisterAuthFlows({}: RegisterProps) {
-  const [name, setName] = useState<string | null>(null);
-  const [address, setAddress] = useState<string | null>("0x...");
+  const [name, setName] = useState<string>(() => new URLSearchParams(window.location.search).get("name") || "");
+  const [address, setAddress] = useState<string>(ADDRESS_NOT_FOUND);
+  const [chain, setChain] = useState<SelectedChain | null>(EOA_CHAIN);
   const [authFlows, setAuthFlows] = useState<PotentialAuthFlow[]>([newAuthFlow(0)]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -62,29 +74,25 @@ export function RegisterAuthFlows({}: RegisterProps) {
     try {
       setError(null);
 
-      const ensAddress = await publicClient.getEnsAddress({
-        name: normalize(name),
-      });
-
-      if (ensAddress) {
-        setAddress(ensAddress);
-      } else {
-        setAddress("0x...");
-        return;
-      }
-
-      const domainAuthenticator = await publicClient.getEnsText({
+      const authenticator = await publicClient.getEnsText({
         name: normalize(name),
         key: "authenticator",
       });
       // domainAuthenticator can be null, a JSON string or a URL with a "{}" as name placeholder
-      if (!domainAuthenticator) return;
+      if (!authenticator) {
+        const ensAddress = await publicClient.getEnsAddress({
+          name: normalize(name),
+        });
+        setAddress(ensAddress || ADDRESS_NOT_FOUND);
+
+        return;
+      }
 
       let address: Address;
       let authFlows: AuthFlow[];
       try {
         // First try to resolve the authenticator as a URL
-        const authenticatorURL = new URL(domainAuthenticator.replace("{}", name));
+        const authenticatorURL = new URL(authenticator.replace("{}", name));
         authenticatorURL.searchParams.set("name", name); // Optional but an authenticator service might want other query params too
         const response = await fetch(authenticatorURL);
         const { address: resolvedAddress, authFlows: resolvedAuthMethods } = await response.json();
@@ -93,14 +101,16 @@ export function RegisterAuthFlows({}: RegisterProps) {
       } catch (error) {
         console.error(error);
         // If that fails, authenticator must be the JSON itself
-        address = ensAddress;
-        authFlows = JSON.parse(domainAuthenticator);
+        const { address: resolvedAddress, authFlows: resolvedAuthMethods } = JSON.parse(authenticator);
+        address = resolvedAddress;
+        authFlows = resolvedAuthMethods;
       }
 
-      if (ensAddress.toLowerCase() !== address.toLowerCase()) {
-        throw new Error("Address mismatch between name resolver and auth flow provider");
+      if (!address ||!authFlows) {
+        throw new Error("Authenticator likely not saved yet in ENS or it's not a valid JSON or URL.");
       }
 
+      setAddress(address);
       setAuthFlows(authFlows.map((flow, i) => ({
         ...flow,
         id: i,
@@ -110,20 +120,20 @@ export function RegisterAuthFlows({}: RegisterProps) {
       })));
     } catch (error) {
       console.error(error);
-      setAddress("0x...");
+      setAddress(ADDRESS_NOT_FOUND);
     }
   }, 500), [setName, setAddress]);
   const updateResolveName = async (name: string | null) => {
     if (!name) {
-      setName(null);
-      setAddress("0x...");
+      setName("");
+      setAddress(ADDRESS_NOT_FOUND);
       return;
     }
 
     const clearedName = name.replace(/\s/g, "");
 
     setName(clearedName);
-    setAddress("Resolving...");
+    setAddress("Fetching address...");
     resolveName(clearedName);
   }
 
@@ -158,12 +168,16 @@ export function RegisterAuthFlows({}: RegisterProps) {
         URI: af.URI ? af.URI : undefined,
       }));
 
+      const requestBody: Authenticator & { name: string } = { address: address as Address, name, authFlows: authenticatorAuthFlows };
+      if (chain?.chainId) {
+        requestBody.chain = chain.chainId;
+      }
       const response = await fetch(`${import.meta.env.VITE_AUTHENTICATOR_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, authFlows: authenticatorAuthFlows }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -184,19 +198,35 @@ export function RegisterAuthFlows({}: RegisterProps) {
     window.open("https://app.ens.domains/", "_blank");
   }
 
-  const copyAuthFlows = () => {
+  const copyAuthenticator = () => {
     const ensAuthFlows: AuthFlow[] = authFlows.map((af) => ({
       platform: af.platform === PLATFORM_EVERYWHERE ? undefined : af.platform,
       connection: af.connection,
       URI: af.URI ? af.URI : undefined,
     }));
 
-    navigator.clipboard.writeText(JSON.stringify(ensAuthFlows));
+    const authenticator: Authenticator = {
+      address: address as Address,
+      authFlows: ensAuthFlows,
+    };
+    if (chain?.chainId) {
+      authenticator.chain = chain.chainId;
+    }
+
+    navigator.clipboard.writeText(JSON.stringify(authenticator));
   }
 
   const copyAuthenticatorURL = () => {
     navigator.clipboard.writeText('https://login-with-name-wagmi-sdk.onrender.com/auth/{}');
   }
+
+  const isAuthenticatorComplete = !!name && address !== ADDRESS_NOT_FOUND && !!authFlows.length;
+
+  useEffect(() => {
+    if (name) {
+      resolveName(name);
+    }
+  }, [name]);
 
   return (
     <div className="register">
@@ -213,36 +243,35 @@ export function RegisterAuthFlows({}: RegisterProps) {
       >
         After registering your name on Sepolia ENS, you have to define how we are going to find and request authentication for that same wallet<br />
         For that, you will define authentication flows, which will tell the connector where your wallet is accessible and how it has to connect with it<br /><br />
-        First enter your Sepolia ENS wallet name to fetch the current configuration<br />
+        First enter your Sepolia ENS name to fetch the current configuration<br />
         Then you can configure the authentication flows and store them in Sepolia ENS or an authenticator service that will hold them for you
       </Typography>
 
       <form onSubmit={submit}>
         <Stack
-          className="auth-flow-stack"
+          className="authenticator-config"
           direction="column"
           justifyContent="center"
           alignItems="center"
           spacing={0}
         >
-          <Box className="auth-flow-address">
+          <Box className="authenticator-property">
             <Typography
               sx={{ color: "white" }}
               level="h3"
               variant="plain"
               noWrap
             >
-              Sepolia ENS Name:
+              ENS Name:
             </Typography>
             <Tooltip
               arrow
               placement="top"
               variant="outlined"
-              title="The name that you want to link to your wallet address"
+              title="The ENS where you will store the authentication config and that dApps will use to authenticate you"
             >
               <Textarea
-                className="auth-flow-param-input"
-                style={{ marginLeft: "16px", maxWidth: "350px" }}
+                className="authenticator-property-input"
                 disabled={false}
                 required
                 maxRows={1}
@@ -253,13 +282,72 @@ export function RegisterAuthFlows({}: RegisterProps) {
                 onChange={(event) => updateResolveName(event.target.value || null)}
               />
             </Tooltip>
+          </Box>
+          <Box className="authenticator-property">
             <Typography
-              sx={{ color: "white", flexGrow: 1, marginLeft: "16px", textAlign: "left", width: "440px" }}
+              sx={{ color: "white" }}
+              level="h3"
               variant="plain"
               noWrap
             >
-              {address}
+              Wallet Address:
             </Typography>
+            <Tooltip
+              arrow
+              placement="top"
+              variant="outlined"
+              title="The wallet you will use to authenticate with dApps. It must be an EOA. Smart wallet support is coming soon."
+            >
+              <Textarea
+                className="authenticator-property-input"
+                disabled={false}
+                required
+                maxRows={1}
+                size="md"
+                variant="outlined"
+                placeholder={ADDRESS_NOT_FOUND}
+                value={address || ADDRESS_NOT_FOUND}
+                onChange={(event) => setAddress(event.target.value || ADDRESS_NOT_FOUND)}
+              />
+            </Tooltip>
+          </Box>
+          <Box className="authenticator-property">
+            <Typography
+              sx={{ color: "white" }}
+              level="h3"
+              variant="plain"
+              noWrap
+            >
+              Wallet Chain:
+            </Typography>
+            <Tooltip
+              arrow
+              placement="top"
+              variant="outlined"
+              title="The chain where the wallet is located. Select No Chain if it is an EOA"
+            >
+              <Autocomplete<{ chainId: string, label: string}>
+                className="authenticator-property-input"
+                disabled={false}
+                size="md"
+                variant="outlined"
+                placeholder="Chain"
+                value={chain}
+                onChange={(event, newValue) => {
+                  console.log(newValue);
+                  setChain(newValue);
+                }}
+                options={[
+                  EOA_CHAIN,
+                  { chainId: "eip155:1", label: "Ethereum" },
+                  { chainId: "eip155:56", label: "BNB Smart Chain" },
+                  { chainId: "eip155:8453", label: "Base" },
+                  { chainId: "eip155:137", label: "Polygon" },
+                  { chainId: "eip155:42161", label: "Arbitrum One" },
+                  { chainId: "eip155:11155111", label: "Ethereum Sepolia" },
+                ]}
+              />
+            </Tooltip>
           </Box>
           <ReactSortable className="auth-flows" list={authFlows} setList={setAuthFlows}>
             {authFlows.map((flow, i) => (
@@ -368,23 +456,19 @@ export function RegisterAuthFlows({}: RegisterProps) {
                             <li>a mobile app package name (Android+MWP only, org.toshi)</li>
                             <li>https://domainwallet.id/wallet (for web wallets or magic links)</li>
                           </ul>
-                          Leave it blank if you just want to use a wallet connect QR code or injected extension
+                          Or you can leave it blank if you just want to use a wallet connect QR code or an injected extension
                         </Box>
                       }
                     >
-                      <Textarea
+                      <Autocomplete
                         className="auth-flow-param-input"
                         disabled={false}
-                        maxRows={1}
                         size="md"
                         variant="outlined"
                         placeholder="Wallet location"
                         value={flow.URI}
-                        onChange={(event) => {
-                          const newFlows = [...authFlows];
-                          newFlows[i] = { ...flow, URI: event.target.value || "" };
-                          setAuthFlows(newFlows);
-                        }}
+                        options={wallets}
+                        freeSolo
                       />
                     </Tooltip>
                   </Box>
@@ -401,10 +485,20 @@ export function RegisterAuthFlows({}: RegisterProps) {
         <div className="button-bar" style={{ marginTop: "64px" }}>
           <button type="button" onClick={goToRoot}>Go to Home</button>
           <button type="button" onClick={goToRegisterName}>Back to name</button>
-          <button type="button" onClick={() => setOpenENSModal(true)} style={{ backgroundColor: "lightgreen", minWidth: "180px" }}>
+          <button
+            type="button"
+            disabled={!isAuthenticatorComplete}
+            onClick={() => setOpenENSModal(true)}
+            style={{ backgroundColor: isAuthenticatorComplete ? "lightgreen" : "lightgray", minWidth: "180px" }}
+          >
             Register flows in ENS
           </button>
-          <button type="submit" style={{ backgroundColor: "lightgreen", minWidth: "240px" }}>
+          <button
+            type="button"
+            disabled={!isAuthenticatorComplete}
+            onClick={(event) => submit(event)}
+            style={{ backgroundColor: isAuthenticatorComplete ? "lightgreen" : "lightgray", minWidth: "240px" }}
+          >
             {loading ? <CircularProgress size="sm" /> : "Register flows in Authenticator"}
           </button>
         </div>
@@ -429,7 +523,7 @@ export function RegisterAuthFlows({}: RegisterProps) {
           3. Go to the Records option.<br />
           4. Add a Text record with the key "authenticator". Or edit it if it already exists.<br />
           5. Fill the value of the "authenticator" record with the stringified JSON of your authentication flows.<br />
-          <button onClick={copyAuthFlows} style={{ width: "420px" }}>Copy auth flows to clipboard</button>
+          <button onClick={copyAuthenticator} style={{ width: "420px" }}>Copy authenticator to clipboard</button>
           6. Save confirming the transaction with your wallet.<br />
           7. Done! Your authentication flows are now stored in ENS.<br /><br />
 

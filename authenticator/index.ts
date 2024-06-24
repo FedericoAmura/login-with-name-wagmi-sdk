@@ -4,8 +4,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import { createPublicClient, http } from "viem";
-import { sepolia } from "viem/chains";
 
 const prisma = new PrismaClient()
 const app = express();
@@ -19,23 +17,13 @@ app.use(bodyParser.json());
 // Register route
 app.post("/register", async (req, res) => {
   try {
-    const { name, authFlows, chain } = req.body;
+    const { address, name, authFlows, chain } = req.body;
     if (name && authFlows) {
-      const client = createPublicClient({
-        chain: sepolia,
-        transport: http(),
+      const record = await prisma.record.upsert({
+        where: { name },
+        update: { address, authFlows, chain },
+        create: { address, name, authFlows, chain },
       });
-
-      const [address, record] = await Promise.all([
-        client.getEnsAddress({
-          name,
-        }),
-        prisma.record.upsert({
-          where: { name },
-          update: { authFlows, chain },
-          create: { name, authFlows, chain },
-        }),
-      ]);
 
       res.status(200).json({ address, authFlows: record.authFlows, chain, name });
     } else {
@@ -51,21 +39,11 @@ app.post("/register", async (req, res) => {
 app.get("/auth/:name?", async (req, res) => {
   const name = req.params.name || req.query.name;
   if (name) {
-    const client = createPublicClient({
-      chain: sepolia,
-      transport: http(),
+    const record = await prisma.record.findUnique({
+      where: { name: name as string },
     });
-
-    const [address, record] = await Promise.all([
-      client.getEnsAddress({
-        name: name as string,
-      }),
-      prisma.record.findUnique({
-        where: { name: name as string },
-      }),
-    ]);
     if (record) {
-      res.status(200).json({ address: address, authFlows: record.authFlows, name, chain: record.chain });
+      res.status(200).json({ address: record.address, authFlows: record.authFlows, name, chain: record.chain });
     } else {
       res.status(404).send("Record not found");
     }

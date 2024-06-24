@@ -41,6 +41,12 @@ export interface AuthFlow {
   URI?: string;
 }
 
+export interface Authenticator {
+  address: Address;
+  chain?: string;
+  authFlows: AuthFlow[];
+}
+
 export type WCConnectionData = {
   wcUri: string;
   domainName: string;
@@ -53,7 +59,7 @@ export type Options = {
    * Function to get the domain name for the login
    * The connector will use this function to get the domain name
    */
-  getDomainName: () => Promise<string> | string;
+  getName: () => Promise<string> | string;
   /**
    * Function to pass the dApp the wcUri, domain name, address and wallet URI
    * This way dApp can show the QR code and open the wallet URI with a button if the auto-open fails
@@ -162,19 +168,16 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
       async connect(parameters) {
         try {
           options.toggleLoading?.(LoginWithNameSteps.GET_DOMAIN_NAME);
-          let domainName = await options.getDomainName();
-          if (!domainName) {
+          let name = await options.getName();
+          if (!name) {
             throw new Error("Domain name not provided");
           }
 
           options.toggleLoading?.(LoginWithNameSteps.RESOLVE_DOMAIN_NAME);
           const nameResolver = options.nameResolver || new ENS({ chain: options.chain });
-          const [domainAddress, domainAuthenticator] = await Promise.all([
-            nameResolver.resolveName(domainName),
-            nameResolver.resolveAuthenticator(domainName),
-          ]);
-          if (!domainAddress || !domainAuthenticator) {
-            throw new Error(`Could not resolve domain address or authenticator`);
+          const authenticator = await nameResolver.resolveAuthenticator(name);
+          if (!authenticator) {
+            throw new Error(`Could not resolve domain authenticator`);
           }
 
           options.toggleLoading?.(LoginWithNameSteps.RESOLVE_AUTHENTICATOR);
@@ -182,22 +185,26 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
           let authFlows: AuthFlow[];
           try {
             // First try to resolve the authenticator as a URL
-            const authenticatorURL = new URL(domainAuthenticator.replace("{}", domainName));
-            authenticatorURL.searchParams.set("name", domainName); // Optional but an authenticator service might want other query params too
+            const authenticatorURL = new URL(authenticator.replace("{}", name));
+            authenticatorURL.searchParams.set("name", name); // Optional but an authenticator service might want other query params too
             const response = await fetch(authenticatorURL);
             const { address: resolvedAddress, authFlows: resolvedAuthMethods } = await response.json();
             address = resolvedAddress;
             authFlows = resolvedAuthMethods;
+
+            if (!address || !authFlows) {
+              throw new Error('Could not fetch authenticator from service');
+            }
           } catch (error) {
             console.error(error);
             // If that fails, authenticator must be the JSON itself
-            address = domainAddress;
-            authFlows = JSON.parse(domainAuthenticator);
-          }
+            const { address: resolvedAddress, authFlows: resolvedAuthMethods } = JSON.parse(authenticator);
+            address = resolvedAddress;
+            authFlows = resolvedAuthMethods;
 
-          // Validate that the address in the authenticator matches the address resolved from the domain
-          if (domainAddress.toLowerCase() !== address.toLowerCase()) {
-            throw new Error("Address mismatch between name resolver and auth flow provider");
+            if (!address || !authFlows) {
+              throw new Error('Could not parse authenticator data');
+            }
           }
 
           // Find the first supported auth flow
@@ -235,7 +242,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             }
 
             const accounts = await provider.request({ method: "eth_requestAccounts" });
-            if (!accounts.map((a) => a.toLowerCase()).includes(domainAddress.toLowerCase() as Address)) {
+            if (!accounts.map((a) => a.toLowerCase()).includes(address.toLowerCase())) {
               throw new Error("Injected provider does not have the domain address");
             }
             const chainHex = await provider.request({ method: "eth_chainId" });
@@ -250,7 +257,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             const provider = await EthereumProvider.init({
               projectId: options.wcConfig.projectId,
               metadata: options.wcConfig.metadata,
-              chains: [parameters?.chainId ?? options.chain?.id ?? mainnet.id], // TODO should use optionalChains for better multichain compatibility
+              optionalChains: [parameters?.chainId ?? options.chain?.id ?? mainnet.id],
               showQrModal: !handlesQRDisplay,
               qrModalOptions: {
                 desktopWallets: [],
@@ -265,15 +272,15 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
                 let addressAuthenticationURL;
                 if (authFlow?.URI) {
                   addressAuthenticationURL = new URL(authFlow!.URI);
-                  addressAuthenticationURL.searchParams.set("domain", domainName!);
-                  addressAuthenticationURL.searchParams.set("address", domainAddress!);
+                  addressAuthenticationURL.searchParams.set("domain", name!);
+                  addressAuthenticationURL.searchParams.set("address", address);
                   addressAuthenticationURL.searchParams.set("wcUri", uri);
                   window.open(addressAuthenticationURL, "_blank");
                 }
                 options.toggleWCUri?.({
                   wcUri: uri,
-                  domainName,
-                  address: domainAddress!,
+                  domainName: name,
+                  address: address,
                   walletUri: addressAuthenticationURL?.toString(),
                 });
               }
@@ -283,7 +290,7 @@ export function loginWithName(parameters: LoginWithNameParameters): CreateConnec
             await provider.connect();
 
             const accounts = provider.accounts as Address[];
-            if (!accounts.map((a) => a.toLowerCase()).includes(domainAddress.toLowerCase() as Address)) {
+            if (!accounts.map((a) => a.toLowerCase()).includes(address.toLowerCase() as Address)) {
               provider.disconnect().catch(console.error);
               throw new Error("Remote provider does not have the domain address");
             }

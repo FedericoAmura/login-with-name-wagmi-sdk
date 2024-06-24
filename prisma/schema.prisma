@@ -11,6 +11,7 @@ model Record {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  address   String
   name      String   @unique
   chain     String?
   authFlows Json

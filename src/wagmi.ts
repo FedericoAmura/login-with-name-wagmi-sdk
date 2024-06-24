@@ -31,7 +31,7 @@ export const config = createConfig({
         reloadOnDisconnect: false,
         toggleLoading: showLoading,
         nameResolver,
-        getDomainName: requestName,
+        getName: requestName,
         toggleWCUri: toggleWCUri,
       },
     }),

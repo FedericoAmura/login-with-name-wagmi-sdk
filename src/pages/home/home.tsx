@@ -67,7 +67,7 @@ export function Home({}: HomeProps) {
           <div className="wallet-options">
             <h3>Don't have a login with name linked wallet?</h3>
             <p>Click <Link to={'/domainWallet'}>Here</Link> to get a domain linked wallet ready to use!</p>
-            <p>Follow <Link to={'/registerName'}>these steps</Link> to link your ENS domain and use any Ethereum wallet!</p>
+            <p>Follow <Link to={'/registerName'}>these steps</Link> to use any Ethereum wallet and an ENS domain!</p>
           </div>
         </>
       )}

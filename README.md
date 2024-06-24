@@ -6,12 +6,6 @@
 A [Wagmi](https://wagmi.sh/) connector that follows [CAIP-275][],
 allowing you to add login with name into your dApp for any EMV chain.
 
-### Warning
-
-This is a work in progress and should not be used in production. CAIP still has not been merged into the main CAIP
-repository and is still in draft.
-It is likely that changes will be made.
-
 </div>
 
 # Usage
@@ -48,7 +42,7 @@ const lwnConfig = {
       },
     },
     nameResolver,
-    getDomainName: requestName,
+    getName: requestName,
   },
 };
 
@@ -137,23 +131,23 @@ npm install login-with-name
 
 The connector receives an object with several attributes to customize its behavior.
 
-| Param                                 | Description                                                                                                                                                                        | Required | Default |
-|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
-| options                               | Object with the following attributes                                                                                                                                               | Yes      | -       |
-| options.getDomainName                 | Function that returns the domain name to be used in the login. Will be called at connection                                                                                        | Yes      | -       |
+| Param                                 | Description                                                                                                                                                                       | Required | Default |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| options                               | Object with the following attributes                                                                                                                                              | Yes      | -       |
+| options.getName                       | Function that returns the name to be used in the login. Will be called at connection                                                                                        | Yes      | -       |
 | options.toggleWCUri                   | Function that notifies dApp about the WalletConnect URI, domain name, address and wallet URI. Will be called when connector requests connection from a wallet using Wallet Connect | No       | -       |
-| options.nameResolver                  | Instance of a class that implements the `NameResolver` interface. Will be used to resolve domain names and get authentication flows                                                | No       | ENS     |
-| options.chain                         | Chain the connector will use                                                                                                                                                       | No       | mainnet |
-| options.wcConfig                      | Configuration object for WalletConnect as specified in [their docs](https://docs.walletconnect.com/advanced/providers/ethereum)                                                    | Yes      | -       |
-| options.wcConfig.projectId            | WalletConnect project ID                                                                                                                                                           | Yes      | -       |
-| options.wcConfig.metadata             | Metadata object for the WalletConnect EthereumProvider provider                                                                                                                    | Yes      | -       |
-| options.wcConfig.metadata.name        | Name of the dApp                                                                                                                                                                   | Yes      | -       |
-| options.wcConfig.metadata.description | Description of the dApp                                                                                                                                                            | Yes      | -       |
-| options.wcConfig.metadata.url         | URL of the dApp                                                                                                                                                                    | Yes      | -       |
-| options.wcConfig.metadata.icons       | Array of URLs for the dApp icons                                                                                                                                                   | Yes      | -       |
-| options.reloadOnDisconnect            | Whether to reload the connection when the user disconnects                                                                                                                         | No       | false   |
-| options.toggleLoading                 | Function to toggle loading state so dApp can show corresponding loading UI and inform the user what is happening                                                                   | No       | -       |
-| options.debug                         | Whether to log debug messages                                                                                                                                                      | No       | false   |
+| options.nameResolver                  | Instance of a class that implements the `NameResolver` interface. Will be used to resolve domain names and get authentication flows                                               | No       | ENS     |
+| options.chain                         | Chain the connector will use                                                                                                                                                      | No       | mainnet |
+| options.wcConfig                      | Configuration object for WalletConnect as specified in [their docs](https://docs.walletconnect.com/advanced/providers/ethereum)                                                   | Yes      | -       |
+| options.wcConfig.projectId            | WalletConnect project ID                                                                                                                                                          | Yes      | -       |
+| options.wcConfig.metadata             | Metadata object for the WalletConnect EthereumProvider provider                                                                                                                   | Yes      | -       |
+| options.wcConfig.metadata.name        | Name of the dApp                                                                                                                                                                  | Yes      | -       |
+| options.wcConfig.metadata.description | Description of the dApp                                                                                                                                                           | Yes      | -       |
+| options.wcConfig.metadata.url         | URL of the dApp                                                                                                                                                                   | Yes      | -       |
+| options.wcConfig.metadata.icons       | Array of URLs for the dApp icons                                                                                                                                                  | Yes      | -       |
+| options.reloadOnDisconnect            | Whether to reload the connection when the user disconnects                                                                                                                        | No       | false   |
+| options.toggleLoading                 | Function to toggle loading state so dApp can show corresponding loading UI and inform the user what is happening                                                                  | No       | -       |
+| options.debug                         | Whether to log debug messages                                                                                                                                                     | No       | false   |
 
 # Demo
 
@@ -166,15 +160,15 @@ There is also a server in the `authenticator` directory, whose sole responsibili
 
 # How it works?
 
-The connector uses the CAIP-275 standard to resolve the name, their authentication flows and to find and connect with the indicated wallet.
+The included wagmi connector uses the [CAIP-275][] standard to resolve the name, its authentication flows and to find and connect with the indicated wallet.
 
 [CAIP-275][] is a standard that allows you to resolve a name to authentication flows.
 An authentication flow is a JSON object that contains the necessary information to authenticate the user and connect the wallet.
 
 There are several steps involved in this process
-1. When the user clicks on the "Login with Name" button, the connector will call the `getDomainName` function to get the domain name.
-2. The connector will then use the `NameResolver` to resolve the domain name to an address and to authentication configuration. This last configuration is saved in a text record called `authenticator` for that same domain name.
-3. If the authentication configuration is an URL, the connector will resolve the URL and get the actual authentication configuration.
+1. When the user clicks on the "Login with Name" button, the connector will call the `getName` function to get the name from the user or dApp.
+2. The connector will then use the `NameResolver` to resolve the name to an authentication configuration. This configuration is saved in a text record called `authenticator` under the name in a naming system like ENS.
+3. If the authentication configuration is an URL, the connector will process the URL and fetch the actual authentication configuration.
 4. The connector will then use the authentication flow configuration to authenticate the user and connect the wallet as described in the [CAIP-275][] standard.
 5. Once the wallet connects back, the connector will handle the connection between dApp and wallet.
 

@@ -16,7 +16,7 @@ export interface RegisterProps {}
 export function RegisterName({}: RegisterProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
-  const [validation, setValidation] = useState<"success" | "error" | string>("");
+  const [validation, setValidation] = useState<"error" | string>("");
   const { goToRegisterAuthFlows, goToRoot } = useNavigation();
 
   const openENS = () => {
@@ -54,19 +54,22 @@ export function RegisterName({}: RegisterProps) {
 
   return (
     <div className="centered-column">
-      <h1>Link your wallet address to a name</h1>
+      <h1>Get an ENS name to find your wallet config</h1>
 
       <div>
         <p>
-          First step is to link your public name with the address that you want to log in with<br />
+          First step is to get an ENS name to store and find our authentication data<br />
           Any naming system that has a <a
           href="https://github.com/FedericoAmura/login-with-name-wagmi-sdk/tree/main/lib/nameResolvers"
           target="_blank">NameResolver</a> in the connector will work<br />
-          For simplicity, and because several projects integrate with it, in this demo we use ENS<br />
+          For simplicity, and because a lot of projects already integrate with it, in this demo we use ENS Sepolia<br />
+          The dApp can define their own name resolver so it can be used with any naming system such as social networks, or private naming systems<br />
         </p>
         <h3>1. Go to <a href="https://app.ens.domains/" target="_blank">ENS</a> and register your name</h3>
-        <p>Once your name is registered and linked to your address we can validate below if it can be correctly
-          resolved</p>
+        <p>
+          Register a name first<br />
+          There is no need to repeat this step if you already have one on Sepolia<br />
+        </p>
         <button onClick={openENS}>Open ENS</button>
         <p style={{ color: 'red' }}>
           <span>Note:</span>
@@ -105,12 +108,12 @@ export function RegisterName({}: RegisterProps) {
       </div>
 
       <p style={{ marginTop: '32px' }}>
-        Once you have your name registered, we can continue setting up your authentication flows.
+        Once you have your name registered and can be found, we can continue setting up your authentication flows.
       </p>
 
       <div className="button-bar" style={{ marginTop: "64px" }}>
         <button onClick={() => goToRoot()}>Go to Home</button>
-        <button onClick={() => goToRegisterAuthFlows()}>Continue to Auth Flows</button>
+        <button onClick={() => goToRegisterAuthFlows(validation !== "error" ? name : undefined)}>Continue to Auth Flows</button>
       </div>
     </div>
   );

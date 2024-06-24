@@ -15,8 +15,8 @@ const useNavigation = () => {
     navigate("/registerName");
   }
 
-  const goToRegisterAuthFlows = () => {
-    navigate("/registerAuthFlows");
+  const goToRegisterAuthFlows = (name?: string) => {
+    navigate(`/registerAuthFlows${name ? `?name=${name}` : ""}`);
   }
 
   const goToHome = () => {
